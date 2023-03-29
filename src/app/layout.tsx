@@ -30,6 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             {children}
           </div>
         </Providers>
+        <div id="modal-root"></div>
       </body>
     </html>
   )

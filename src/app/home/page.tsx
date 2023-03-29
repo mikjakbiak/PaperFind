@@ -3,25 +3,35 @@
 import Card from 'src/app/components/Card'
 import StyledLink from 'src/app/components/StyledLink'
 import styled from '@emotion/styled'
-import { Author, Paper } from '@prisma/client'
 import axios from 'axios'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 import { HiArrowRight } from 'react-icons/hi'
+import { PaperPopulated } from 'src/pages/api/get-papers'
+import { GroupPopulated } from 'src/pages/api/get-many-groups'
 
 export default function HomePage() {
-  const [papers, setPapers] = useState<
-    (Paper & {
-      authors: Author[]
-    })[]
-  >([])
+  const [groups, setGroups] = useState<GroupPopulated[]>([])
+  const [papers, setPapers] = useState<PaperPopulated[]>([])
   useEffect(() => {
     axios
       .get<{
         error: boolean
-        data: (Paper & {
-          authors: Author[]
-        })[]
+        data: GroupPopulated[]
+      }>('/api/get-many-groups')
+      .then((res) => {
+        setGroups(res.data.data)
+      })
+      .catch((err) => {
+        console.error(err)
+      })
+  }, [])
+
+  useEffect(() => {
+    axios
+      .get<{
+        error: boolean
+        data: PaperPopulated[]
       }>('/api/get-papers')
       .then((res) => {
         setPapers(res.data.data)
@@ -36,9 +46,11 @@ export default function HomePage() {
       <StyledCard>
         <Heading>Research Groups</Heading>
         <CardBody>
-          <Link href="/groups?id=0">Group 1</Link>
-          <Link href="/groups?id=1">Group 2</Link>
-          <Link href="/groups?id=2">Group 3</Link>
+          {groups.map((group) => (
+            <Link key={group.id} href={`/groups?id=${group.id}`}>
+              {group.name}
+            </Link>
+          ))}
         </CardBody>
         <StyledLink href="/groups">
           See more <HiArrowRight size={20} />
@@ -58,8 +70,8 @@ export default function HomePage() {
       <StyledCard>
         <Heading>Papers</Heading>
         <CardBody>
-          {papers.map((paper, id) => (
-            <Link key={id} href={`/papers/${paper.id}`}>
+          {papers.map((paper) => (
+            <Link key={paper.id} href={`/papers/${paper.id}`}>
               <span>{paper.title}</span>
               <span>
                 <span>{paper.authors[0]?.fName}</span>

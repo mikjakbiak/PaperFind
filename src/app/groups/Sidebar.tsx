@@ -3,15 +3,18 @@
 import Button from 'src/app/components/Button'
 import styled from '@emotion/styled'
 import Link from 'next/link'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
-import { GroupPopulated } from 'src/pages/api/get-groups'
+import { GroupPopulated } from 'src/pages/api/get-many-groups'
 import axios from 'axios'
+import CreateGroupModal from '@/components/CreateGroupModal'
 
 export default function Sidebar() {
+  const router = useRouter()
   const searchParams = useSearchParams()
   const groupId = searchParams.get('id')
 
+  const [showModal, setShowModal] = useState(false)
   const [refetch, setRefetch] = useState(false)
   const [groups, setGroups] = useState<GroupPopulated[]>([])
   useEffect(() => {
@@ -19,7 +22,7 @@ export default function Sidebar() {
       .get<{
         error: boolean
         data: GroupPopulated[]
-      }>('/api/get-groups')
+      }>('/api/get-many-groups')
       .then((res) => {
         setGroups(res.data.data)
       })
@@ -28,25 +31,18 @@ export default function Sidebar() {
       })
   }, [refetch])
 
-  function createGroup() {
-    axios
-      .post('/api/add-group', {
-        name: 'Test2 Group',
-        userEmails: ['w1782957@my.westminster.ac.uk'],
-        libraryIds: [],
-        parentGroupId: null,
-      })
-      .then(() => {
-        setRefetch(!refetch)
-      })
-      .catch((err) => {
-        console.error(err)
-      })
-  }
+  useEffect(() => {
+    if (groups.length) {
+      if (!groupId) {
+        router.push(`/groups?id=${groups[0].id}`)
+      }
+    }
+  }, [groups, groupId])
 
   return (
     <Main>
-      <Button variant="sidebar-primary" onClick={createGroup}>
+      {showModal && <CreateGroupModal closeModal={() => setShowModal(false)} refetch={() => setRefetch(!refetch)} />}
+      <Button variant="sidebar-primary" onClick={() => setShowModal(true)}>
         New Group
       </Button>
       {groups.map((group) => (
