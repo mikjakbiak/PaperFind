@@ -1,8 +1,8 @@
 'use client'
 
-import Button from '@/components/Button'
-import Input from '@/components/Input'
-import Select from '@/components/Select'
+import Button from 'src/app/components/Button'
+import Input from 'src/app/components/Input'
+import Select from 'src/app/components/Select'
 import styled from '@emotion/styled'
 import axios from 'axios'
 import React, { useState } from 'react'

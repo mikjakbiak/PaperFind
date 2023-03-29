@@ -1,16 +1,16 @@
 'use client'
 
-import Button from '@/components/Button'
-import Card from '@/components/Card'
-import Input from '@/components/Input'
-import StyledLink from '@/components/StyledLink'
+import Button from 'src/app/components/Button'
+import Card from 'src/app/components/Card'
+import Input from 'src/app/components/Input'
+import StyledLink from 'src/app/components/StyledLink'
 import styled from '@emotion/styled'
 import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
 import { HiOutlineArrowNarrowLeft } from 'react-icons/hi'
 import { useForm } from 'react-hook-form'
 import axios from 'axios'
-import { UserResponse } from 'pages/api/is-email-available'
+import { UserResponse } from 'src/pages/api/is-email-available'
 
 type Inputs = {
   fName: string

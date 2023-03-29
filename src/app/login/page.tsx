@@ -1,9 +1,9 @@
 'use client'
 
-import Button from '@/components/Button'
-import Card from '@/components/Card'
-import Input from '@/components/Input'
-import StyledLink from '@/components/StyledLink'
+import Button from 'src/app/components/Button'
+import Card from 'src/app/components/Card'
+import Input from 'src/app/components/Input'
+import StyledLink from 'src/app/components/StyledLink'
 import styled from '@emotion/styled'
 import { useRouter, useSearchParams } from 'next/navigation'
 import React, { useState } from 'react'

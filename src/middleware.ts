@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { verifyJWT } from 'utils/jwt'
+import { verifyJWT } from 'src/utils/jwt'
 
 const authRoutes = ['/api/auth/login', '/api/auth/register', '/api/is-email-available']
 const protectedRoutes = ['/api', '/home', '/papers', '/groups']

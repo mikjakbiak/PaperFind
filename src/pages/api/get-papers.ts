@@ -1,6 +1,6 @@
 import { Author, Paper } from '@prisma/client'
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { prisma } from 'shared/db'
+import { prisma } from 'src/shared/db'
 
 export default async function handler(
   req: NextApiRequest,

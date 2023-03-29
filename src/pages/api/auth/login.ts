@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { prisma } from 'shared/db'
-import { verifyPassword } from 'utils/crypto'
-import { generateJWT } from 'utils/jwt'
+import { prisma } from 'src/shared/db'
+import { verifyPassword } from 'src/utils/crypto'
+import { generateJWT } from 'src/utils/jwt'
 
 type LoginDto = {
   email: string

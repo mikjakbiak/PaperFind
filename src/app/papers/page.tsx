@@ -1,6 +1,6 @@
 'use client'
 
-import StyledLink from '@/components/StyledLink'
+import StyledLink from 'src/app/components/StyledLink'
 import styled from '@emotion/styled'
 import { Author, Paper } from '@prisma/client'
 import axios from 'axios'

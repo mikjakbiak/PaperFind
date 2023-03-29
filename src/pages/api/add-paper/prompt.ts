@@ -1,8 +1,8 @@
 import { ReferenceType } from '@prisma/client'
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { prisma } from 'shared/db'
-import { formatChatAnswer } from 'utils/formatChatAnswer'
-import { getCompletion } from 'utils/openAI'
+import { prisma } from 'src/shared/db'
+import { formatChatAnswer } from 'src/utils/formatChatAnswer'
+import { getCompletion } from 'src/utils/openAI'
 
 type PaperType = 'Journal Article' | 'Book'
 

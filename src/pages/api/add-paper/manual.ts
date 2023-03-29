@@ -1,6 +1,6 @@
 import { ReferenceType } from '@prisma/client'
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { prisma } from 'shared/db'
+import { prisma } from 'src/shared/db'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<{}>) {
   const userId = req.headers['user-id'] as string

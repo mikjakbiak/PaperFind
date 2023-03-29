@@ -1,7 +1,7 @@
 'use client'
 
-import Button from '@/components/Button'
-import StyledLink from '@/components/StyledLink'
+import Button from 'src/app/components/Button'
+import StyledLink from 'src/app/components/StyledLink'
 import styled from '@emotion/styled'
 import React, { useState } from 'react'
 import { HiArrowLeft } from 'react-icons/hi'

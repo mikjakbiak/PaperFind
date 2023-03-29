@@ -1,6 +1,6 @@
 'use client'
 
-import Button from '@/components/Button'
+import Button from 'src/app/components/Button'
 import styled from '@emotion/styled'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
