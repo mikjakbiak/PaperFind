@@ -1,0 +1,41 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "mongodb"
+    url      = env("DB_URL")
+}
+
+model Paper {
+    id        String   @id @default(auto()) @map("_id") @db.ObjectId
+    type      ReferenceType
+    title     String
+    abstract  String
+    authors   Author[]  @relation(fields: [authorIds], references: [id])
+    authorIds String[]   @db.ObjectId
+    year      Int
+    month     Int
+    day       Int
+    journal   String
+    volume    String
+    issue     String
+    pages     String[]
+    created   DateTime @default(now())
+    updated   DateTime @updatedAt
+}
+
+model Author {
+    id      String   @id @default(auto()) @map("_id") @db.ObjectId
+    fName   String
+    lName   String
+    papers  Paper[]  @relation(fields: [paperIds], references: [id])
+    paperIds String[]   @db.ObjectId
+    created DateTime @default(now())
+    updated DateTime @updatedAt
+}
+
+enum ReferenceType {
+    ARTICLE
+    BOOK
+}

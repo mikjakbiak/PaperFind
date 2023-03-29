@@ -1,18 +1,36 @@
-import "./globals.css";
+import { Quicksand } from '@next/font/google'
+import Header from './components/Header'
+import { Providers } from './providers'
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+const quicksand = Quicksand({ subsets: ['latin'] })
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      {/*
-        <head /> will contain the components returned by the nearest parent
-        head.tsx. Find out more at https://beta.nextjs.org/docs/api-reference/file-conventions/head
-      */}
+    <html lang="en" className={quicksand.className}>
       <head />
-      <body>{children}</body>
+      <body
+        style={{
+          minHeight: '100vh',
+          margin: 0,
+          backgroundColor: '#14203d',
+          color: '#fff',
+
+          display: 'grid',
+          gridTemplateRows: 'min-content auto',
+        }}
+      >
+        <Providers>
+          <Header />
+          <div
+            style={{
+              position: 'relative',
+              margin: '5vh 5% 0 5%',
+            }}
+          >
+            {children}
+          </div>
+        </Providers>
+      </body>
     </html>
-  );
+  )
 }
