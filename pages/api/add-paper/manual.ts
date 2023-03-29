@@ -14,10 +14,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       year: parseInt(req.body.year),
       month: parseInt(req.body.month),
       day: parseInt(req.body.day),
-      journal: req.body.journal,
-      volume: req.body.volume,
-      issue: req.body.issue,
-      pages: [req.body.pages.from as string, req.body.pages.to as string],
+      publication: req.body.journal,
+      volume: parseInt(req.body.volume),
+      issue: parseInt(req.body.issue),
+      pages: [parseInt(req.body.pages.from), parseInt(req.body.pages.to)],
       authors: {
         create: authors.map((author: { fName: string; lName: string }) => ({
           fName: author.fName,

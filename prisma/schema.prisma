@@ -8,21 +8,23 @@ datasource db {
 }
 
 model Paper {
-    id        String   @id @default(auto()) @map("_id") @db.ObjectId
-    type      ReferenceType
-    title     String
-    abstract  String
-    authors   Author[]  @relation(fields: [authorIds], references: [id])
-    authorIds String[]   @db.ObjectId
-    year      Int
-    month     Int
-    day       Int
-    journal   String
-    volume    String
-    issue     String
-    pages     String[]
-    created   DateTime @default(now())
-    updated   DateTime @updatedAt
+    id          String   @id @default(auto()) @map("_id") @db.ObjectId
+    type        ReferenceType?
+    title       String?
+    abstract    String?
+    authors     Author[]  @relation(fields: [authorIds], references: [id])
+    authorIds   String[]   @db.ObjectId
+    year        Int?
+    month       Int?
+    day         Int?
+    publisher   String?
+    publication String?
+    volume      Int?
+    issue       Int?
+    pages       Int[]
+    doi         String?
+    created     DateTime @default(now())
+    updated     DateTime @updatedAt
 }
 
 model Author {

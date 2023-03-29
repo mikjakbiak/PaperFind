@@ -1,0 +1,63 @@
+import { ReferenceType } from '@prisma/client'
+import type { NextApiRequest, NextApiResponse } from 'next'
+import { prisma } from 'shared/db'
+import { formatChatAnswer } from 'utils/formatChatAnswer'
+import { getCompletion } from 'utils/openAI'
+
+type PaperType = 'Journal Article' | 'Book'
+
+type AnswerDto = {
+  type?: PaperType
+  title?: string
+  authors?: { fName: string; lName: string }[]
+  abstract?: string
+  year?: number
+  month?: number
+  day?: number
+  publisher?: string
+  publication?: string
+  doi?: string
+  volume?: number
+  issue?: number
+  pages?: { from: number; to: number }
+}
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse<{}>) {
+  const prompt = req.body.prompt
+
+  let httpStatus
+  //? Get completion from OpenAI. If it fails, log the error and return proper response
+  const response = await getCompletion(prompt).catch((error) => {
+    if (error.response) {
+      httpStatus = error.response.status
+      console.error(error.response.status)
+      console.error(error.response.data)
+    } else {
+      console.error(error.message)
+    }
+  })
+  if (!response) return res.status(httpStatus ?? 500).end()
+
+  const answer = response.data.choices[0].message?.content
+  if (!answer) return res.status(500).end()
+
+  const completion = formatChatAnswer(JSON.parse(answer)) as AnswerDto
+  console.log(completion)
+
+  //? Create paper in database
+  await prisma.paper.create({
+    data: {
+      ...completion,
+      type: completion.type === 'Journal Article' ? ReferenceType.ARTICLE : ReferenceType.BOOK,
+      authors: {
+        create: completion.authors?.map((author) => ({
+          fName: author.fName,
+          lName: author.lName,
+        })),
+      },
+      pages: completion.pages ? [completion.pages.from, completion.pages.to] : undefined,
+    },
+  })
+
+  res.status(200).end()
+}

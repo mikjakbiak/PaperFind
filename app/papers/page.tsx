@@ -16,13 +16,17 @@ export default function PapersPage() {
   >([])
   useEffect(() => {
     axios
-      .get<
-        (Paper & {
+      .get<{
+        error: boolean
+        data: (Paper & {
           authors: Author[]
         })[]
-      >('/api/get-papers')
+      }>('/api/get-papers')
       .then((res) => {
-        setPapers(res.data)
+        setPapers(res.data.data)
+      })
+      .catch((err) => {
+        console.log(err)
       })
   }, [])
 
@@ -57,7 +61,7 @@ export default function PapersPage() {
                 <td>
                   {paper.authors[0].fName} {paper.authors[0].lName}
                 </td>
-                <td>{paper.journal}</td>
+                <td>{paper.publication}</td>
                 <td>{paper.year}</td>
               </tr>
             ))}
