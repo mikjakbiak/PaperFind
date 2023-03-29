@@ -24,17 +24,17 @@ model User {
 }
 
 model Group {
-    id      String   @id @default(auto()) @map("_id") @db.ObjectId
-    name    String
-    users   User[]   @relation(fields: [userIds], references: [id])
-    userIds String[]   @db.ObjectId
-    libraries Library[] @relation()
-    libraryIds String[]   @db.ObjectId
-    parentGroupId String?  @db.ObjectId
-    parentGroup Group? @relation("NestedGroups", fields: [parentGroupId], references: [id], onUpdate: NoAction, onDelete: NoAction)
-    nestedGroups Group[] @relation("NestedGroups")
-    created DateTime @default(now())
-    updated DateTime @updatedAt
+    id             String     @id @default(auto()) @map("_id") @db.ObjectId
+    name           String
+    users          User[]     @relation(fields: [userIds], references: [id])
+    userIds        String[]   @db.ObjectId
+    libraries      Library[]  @relation()
+    libraryIds     String[]   @db.ObjectId
+    parentGroupId  String?    @db.ObjectId
+    parentGroup    Group?     @relation("NestedGroups", fields: [parentGroupId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+    nestedGroups   Group[]    @relation("NestedGroups")
+    created        DateTime   @default(now())
+    updated        DateTime   @updatedAt
 }
 
 model Paper {

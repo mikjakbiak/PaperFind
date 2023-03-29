@@ -4,35 +4,58 @@ import Button from 'src/app/components/Button'
 import styled from '@emotion/styled'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { GroupPopulated } from 'src/pages/api/get-groups'
+import axios from 'axios'
 
 export default function Sidebar() {
   const searchParams = useSearchParams()
-  const libraryId = searchParams.get('id')
+  const groupId = searchParams.get('id')
+
+  const [refetch, setRefetch] = useState(false)
+  const [groups, setGroups] = useState<GroupPopulated[]>([])
+  useEffect(() => {
+    axios
+      .get<{
+        error: boolean
+        data: GroupPopulated[]
+      }>('/api/get-groups')
+      .then((res) => {
+        setGroups(res.data.data)
+      })
+      .catch((err) => {
+        console.error(err)
+      })
+  }, [refetch])
+
+  function createGroup() {
+    axios
+      .post('/api/add-group', {
+        name: 'Test2 Group',
+        userEmails: ['w1782957@my.westminster.ac.uk'],
+        libraryIds: [],
+        parentGroupId: null,
+      })
+      .then(() => {
+        setRefetch(!refetch)
+      })
+      .catch((err) => {
+        console.error(err)
+      })
+  }
 
   return (
     <Main>
-      <Button variant="sidebar-primary">New Library</Button>
-      <Link href="/papers">
-        <Button variant="sidebar-secondary" active={!libraryId}>
-          All Papers
-        </Button>
-      </Link>
-      <Link href="/papers/libraries?id=0">
-        <Button variant="sidebar-secondary" active={libraryId === '0'}>
-          Library 1
-        </Button>
-      </Link>
-      <Link href="/papers/libraries?id=1">
-        <Button variant="sidebar-secondary" active={libraryId === '1'}>
-          Library 2
-        </Button>
-      </Link>
-      <Link href="/papers/libraries?id=2">
-        <Button variant="sidebar-secondary" active={libraryId === '2'}>
-          Library 3
-        </Button>
-      </Link>
+      <Button variant="sidebar-primary" onClick={createGroup}>
+        New Group
+      </Button>
+      {groups.map((group) => (
+        <Link key={group.id} href={`/groups?id=${group.id}`}>
+          <Button variant="sidebar-secondary" active={groupId === group.id}>
+            {group.name}
+          </Button>
+        </Link>
+      ))}
     </Main>
   )
 }

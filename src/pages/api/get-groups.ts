@@ -1,16 +1,20 @@
-import { Author, Paper } from '@prisma/client'
+import { Group, Library, User } from '@prisma/client'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { prisma } from 'src/shared/db'
+import { PaperPopulated } from './get-papers'
 
-export type PaperPopulated = Paper & {
-  authors: Author[]
+export type GroupPopulated = Group & {
+  users: User[]
+  libraries: (Library & {
+    papers: PaperPopulated[]
+  })[]
 }
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<{
     error: boolean
-    data: PaperPopulated[]
+    data: GroupPopulated[]
   }>
 ) {
   const userId = req.headers['user-id'] as string | undefined
@@ -21,20 +25,31 @@ export default async function handler(
       data: [],
     })
 
-  const papers = await prisma.paper
+  const groups = await prisma.group
     .findMany({
       where: {
-        userId,
+        userIds: {
+          has: userId,
+        },
       },
       include: {
-        authors: true,
+        users: true,
+        libraries: {
+          include: {
+            papers: {
+              include: {
+                authors: true,
+              },
+            },
+          },
+        },
       },
     })
-    .then((papers) => {
+    .then((groups) => {
       res.status(200)
       return {
         error: false,
-        data: papers,
+        data: groups,
       }
     })
     .catch((e) => {
@@ -46,5 +61,5 @@ export default async function handler(
       }
     })
 
-  res.json(papers)
+  res.json(groups)
 }

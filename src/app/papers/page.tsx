@@ -2,25 +2,19 @@
 
 import StyledLink from 'src/app/components/StyledLink'
 import styled from '@emotion/styled'
-import { Author, Paper } from '@prisma/client'
 import axios from 'axios'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 import { HiPlus } from 'react-icons/hi'
+import { PaperPopulated } from 'src/pages/api/get-papers'
 
 export default function PapersPage() {
-  const [papers, setPapers] = useState<
-    (Paper & {
-      authors: Author[]
-    })[]
-  >([])
+  const [papers, setPapers] = useState<PaperPopulated[]>([])
   useEffect(() => {
     axios
       .get<{
         error: boolean
-        data: (Paper & {
-          authors: Author[]
-        })[]
+        data: PaperPopulated[]
       }>('/api/get-papers')
       .then((res) => {
         setPapers(res.data.data)
