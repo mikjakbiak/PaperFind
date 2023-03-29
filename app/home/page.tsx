@@ -27,7 +27,7 @@ export default function HomePage() {
         setPapers(res.data.data)
       })
       .catch((err) => {
-        console.log(err)
+        console.error(err)
       })
   }, [])
 
@@ -62,8 +62,8 @@ export default function HomePage() {
             <Link key={id} href={`/papers/${paper.id}`}>
               <span>{paper.title}</span>
               <span>
-                <span>{paper.authors[0].fName}</span>
-                <span>{paper.authors[0].lName}</span>
+                <span>{paper.authors[0]?.fName}</span>
+                <span>{paper.authors[0]?.lName}</span>
               </span>
             </Link>
           ))}

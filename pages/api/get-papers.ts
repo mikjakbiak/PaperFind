@@ -11,8 +11,19 @@ export default async function handler(
     })[]
   }>
 ) {
+  const userId = req.headers['user-id'] as string | undefined
+  //? Should never happen
+  if (!userId)
+    return res.status(401).json({
+      error: true,
+      data: [],
+    })
+
   const papers = await prisma.paper
     .findMany({
+      where: {
+        userId,
+      },
       include: {
         authors: true,
       },

@@ -23,6 +23,10 @@ type AnswerDto = {
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<{}>) {
+  const userId = req.headers['user-id'] as string
+  //? Should never happen
+  if (!userId) return res.status(401).end()
+
   const prompt = req.body.prompt
 
   let httpStatus
@@ -42,12 +46,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   if (!answer) return res.status(500).end()
 
   const completion = formatChatAnswer(JSON.parse(answer)) as AnswerDto
-  console.log(completion)
 
   //? Create paper in database
   await prisma.paper.create({
     data: {
       ...completion,
+      userId,
       type: completion.type === 'Journal Article' ? ReferenceType.ARTICLE : ReferenceType.BOOK,
       authors: {
         create: completion.authors?.map((author) => ({

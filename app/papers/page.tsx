@@ -26,7 +26,7 @@ export default function PapersPage() {
         setPapers(res.data.data)
       })
       .catch((err) => {
-        console.log(err)
+        console.error(err)
       })
   }, [])
 
@@ -59,7 +59,7 @@ export default function PapersPage() {
               <tr key={id}>
                 <td>{paper.title}</td>
                 <td>
-                  {paper.authors[0].fName} {paper.authors[0].lName}
+                  {paper.authors[0]?.fName} {paper.authors[0]?.lName}
                 </td>
                 <td>{paper.publication}</td>
                 <td>{paper.year}</td>

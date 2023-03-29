@@ -1,23 +1,23 @@
 import styled from '@emotion/styled'
 import React from 'react'
 
-type Props = {
+type Props = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
   className?: string
   children: React.ReactNode
-  type?: 'default' | 'sidebar-primary' | 'sidebar-secondary'
+  variant?: 'default' | 'sidebar-primary' | 'sidebar-secondary'
   active?: boolean
   huge?: boolean
-  onClick?: () => void
 }
 
-export default function Button({ className, children, huge, onClick, type = 'default', active }: Props) {
-  switch (type) {
+export default function Button(props: Props) {
+  const { children, variant = 'default' } = props
+  switch (variant) {
     case 'default':
-      return <Default {...{ className, huge, onClick }}>{children}</Default>
+      return <Default {...props}>{children}</Default>
     case 'sidebar-primary':
-      return <SidebarPrimary {...{ className, onClick }}>{children}</SidebarPrimary>
+      return <SidebarPrimary {...props}>{children}</SidebarPrimary>
     case 'sidebar-secondary':
-      return <SidebarSecondary {...{ className, active, onClick }}>{children}</SidebarSecondary>
+      return <SidebarSecondary {...props}>{children}</SidebarSecondary>
   }
 }
 

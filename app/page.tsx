@@ -10,7 +10,7 @@ export default function LandingPage() {
   return (
     <Main>
       <BigText>Collaborate and share your findings</BigText>
-      <Button huge onClick={() => router.push('/signUp')}>
+      <Button huge onClick={() => router.push('/register')}>
         START SHARING
       </Button>
     </Main>

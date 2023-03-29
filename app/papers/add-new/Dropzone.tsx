@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
-import { useDropzone, FileWithPath } from 'React-dropzone'
+import { useDropzone, FileWithPath } from 'react-dropzone'
 import { DocumentProps } from 'react-pdf'
 import { Document } from 'react-pdf/dist/esm/entry.webpack5'
 

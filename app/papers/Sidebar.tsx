@@ -12,24 +12,24 @@ export default function Sidebar() {
 
   return (
     <Main>
-      <Button type="sidebar-primary">New Library</Button>
+      <Button variant="sidebar-primary">New Library</Button>
       <Link href="/papers">
-        <Button type="sidebar-secondary" active={!libraryId}>
+        <Button variant="sidebar-secondary" active={!libraryId}>
           All Papers
         </Button>
       </Link>
       <Link href="/papers/libraries?id=0">
-        <Button type="sidebar-secondary" active={libraryId === '0'}>
+        <Button variant="sidebar-secondary" active={libraryId === '0'}>
           Library 1
         </Button>
       </Link>
       <Link href="/papers/libraries?id=1">
-        <Button type="sidebar-secondary" active={libraryId === '1'}>
+        <Button variant="sidebar-secondary" active={libraryId === '1'}>
           Library 2
         </Button>
       </Link>
       <Link href="/papers/libraries?id=2">
-        <Button type="sidebar-secondary" active={libraryId === '2'}>
+        <Button variant="sidebar-secondary" active={libraryId === '2'}>
           Library 3
         </Button>
       </Link>

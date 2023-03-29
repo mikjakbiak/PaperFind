@@ -5,8 +5,8 @@ import { usePathname, useRouter } from 'next/navigation'
 import React, { useMemo } from 'react'
 import Button from './Button'
 import StyledLink from './StyledLink'
-import { BsPersonCircle } from 'react-icons/bs'
 import Link from 'next/link'
+import AccountDropdown from './AccountDropdown'
 
 export default function Header() {
   const router = useRouter()
@@ -15,8 +15,8 @@ export default function Header() {
   const Right = useMemo(() => {
     const landingPageJSX = (
       <Buttons>
-        <StyledLink href="/signIn">Sign In</StyledLink>
-        <Button onClick={() => router.push('/signUp')}>Sign Up</Button>
+        <StyledLink href="/login">Sign In</StyledLink>
+        <Button onClick={() => router.push('/register')}>Sign Up</Button>
       </Buttons>
     )
 
@@ -35,7 +35,7 @@ export default function Header() {
             Papers
           </NavigationLink>
         </Navigation>
-        <BsPersonCircle size={40} />
+        <AccountDropdown />
       </Container>
     )
 
@@ -78,11 +78,6 @@ const Container = styled.div`
   align-items: center;
 
   column-gap: 5rem;
-
-  > svg {
-    cursor: pointer;
-    color: #e6d840;
-  }
 `
 
 const Navigation = styled.div`

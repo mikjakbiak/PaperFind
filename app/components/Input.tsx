@@ -1,24 +1,22 @@
 import styled from '@emotion/styled'
-import React, { ChangeEvent, HTMLInputTypeAttribute } from 'react'
+import React, { forwardRef } from 'react'
 
-type Props = {
+type Props = React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> & {
   label?: string
-  type: HTMLInputTypeAttribute
-  name: string
-  value?: string
-  placeholder?: string
-  onChange?: (event: ChangeEvent<HTMLInputElement>) => void
   full?: boolean
 }
 
-export default function Input({ label, type, name, value, onChange, placeholder, full }: Props) {
+//TODO: Errors handling
+
+const Input = forwardRef<HTMLInputElement, Props>((props, ref) => {
+  const { label, full } = props
   return (
     <Default full={full}>
       {label && label}
-      <input {...{ type, name, value, onChange, placeholder }} />
+      <input {...props} ref={ref} />
     </Default>
   )
-}
+})
 
 const Default = styled.label<{ full?: boolean }>`
   display: flex;
@@ -41,3 +39,5 @@ const Default = styled.label<{ full?: boolean }>`
     box-sizing: border-box;
   }
 `
+
+export default Input

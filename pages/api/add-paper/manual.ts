@@ -3,11 +3,16 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { prisma } from 'shared/db'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<{}>) {
+  const userId = req.headers['user-id'] as string
+  //? Should never happen
+  if (!userId) return res.status(401).end()
+
   const authors = req.body.authors
   const refType = req.body.referenceType === 'Journal Article' ? ReferenceType.ARTICLE : ReferenceType.BOOK
 
   await prisma.paper.create({
     data: {
+      userId,
       type: refType,
       title: req.body.title,
       abstract: req.body.abstract,
