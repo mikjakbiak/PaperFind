@@ -20,11 +20,16 @@ export async function middleware(request: NextRequest) {
     }
 
     //? Verify token and get user id
-    const { userId, exp } = await verifyJWT(token)
+    const { userId, error } = await verifyJWT(token)
 
-    //? If token is expired, redirect to login page
-    if (exp * 1000 < Date.now()) {
-      return NextResponse.redirect(new URL('/login', request.url))
+    if (error) {
+      //? If token is expired, redirect to login page
+      if (error === 'expired') {
+        return NextResponse.redirect(new URL('/login?session-expired=true', request.url))
+      } else {
+        //? If token is invalid, redirect to login page
+        return NextResponse.redirect(new URL('/', request.url))
+      }
     }
 
     //? Set user id to request headers
