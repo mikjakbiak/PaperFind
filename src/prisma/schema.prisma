@@ -15,8 +15,26 @@ model User {
     lastName  String
     papers    Paper[]  @relation()
     paperIds  String[]   @db.ObjectId
+    libraries Library[] @relation()
+    libraryIds String[]   @db.ObjectId
+    groups    Group[]  @relation(fields: [groupIds], references: [id])
+    groupIds  String[]   @db.ObjectId
     created   DateTime @default(now())
     updated   DateTime @updatedAt
+}
+
+model Group {
+    id      String   @id @default(auto()) @map("_id") @db.ObjectId
+    name    String
+    users   User[]   @relation(fields: [userIds], references: [id])
+    userIds String[]   @db.ObjectId
+    libraries Library[] @relation()
+    libraryIds String[]   @db.ObjectId
+    parentGroupId String?  @db.ObjectId
+    parentGroup Group? @relation("NestedGroups", fields: [parentGroupId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+    nestedGroups Group[] @relation("NestedGroups")
+    created DateTime @default(now())
+    updated DateTime @updatedAt
 }
 
 model Paper {
@@ -35,10 +53,25 @@ model Paper {
     issue       Int?
     pages       Int[]
     doi         String?
+    library     Library? @relation(fields: [libraryId], references: [id])
+    libraryId   String?  @db.ObjectId
     user        User     @relation(fields: [userId], references: [id])
     userId      String   @db.ObjectId
     created     DateTime @default(now())
     updated     DateTime @updatedAt
+}
+
+model Library {
+    id      String   @id @default(auto()) @map("_id") @db.ObjectId
+    name    String
+    papers  Paper[]  @relation()
+    paperIds String[]   @db.ObjectId
+    user    User?     @relation(fields: [userId], references: [id])
+    userId  String?   @db.ObjectId
+    group   Group?   @relation(fields: [groupId], references: [id])
+    groupId String?  @db.ObjectId
+    created DateTime @default(now())
+    updated DateTime @updatedAt
 }
 
 model Author {
