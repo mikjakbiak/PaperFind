@@ -1,4 +1,4 @@
-import { Quicksand } from '@next/font/google'
+import { Quicksand } from "next/font/google"
 import Header from './components/Header'
 import { Providers } from './providers'
 
