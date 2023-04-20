@@ -1,7 +1,6 @@
-import Sidebar from './Sidebar'
+import Sidebar from '../Sidebar'
 
 export default function GroupsLayout({ children, params }: { children: React.ReactNode; params: { id: string } }) {
-  console.log('Layout', { groupId: params.id })
   return (
     <section
       style={{

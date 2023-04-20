@@ -1,5 +1,3 @@
-'use client'
-
 import React, { useEffect, useRef, useState } from 'react'
 import ReactDOM from 'react-dom'
 import styled from '@emotion/styled'
@@ -15,7 +13,7 @@ import { MdModeEdit } from 'react-icons/md'
 
 interface ModalProps {
   closeModal: () => void
-  refetch: () => void
+  refetch?: () => void
 }
 
 type Inputs = {
@@ -26,6 +24,7 @@ type Inputs = {
 export default function CreateGroupModal({ closeModal, refetch }: ModalProps) {
   const [isBrowser, setIsBrowser] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const {
     register,
     handleSubmit,
@@ -43,12 +42,10 @@ export default function CreateGroupModal({ closeModal, refetch }: ModalProps) {
     control,
   })
 
-  // create ref for the StyledModalWrapper component
-  const modalWrapperRef = useRef<HTMLDivElement>(null)
+  const overlayRef = useRef<HTMLDivElement>(null)
 
-  // check if the user has clickedinside or outside the modal
   const backDropHandler = (e: MouseEvent) => {
-    if (!modalWrapperRef.current?.contains(e.target as Node)) {
+    if (overlayRef.current === e.target) {
       closeModal()
     }
   }
@@ -78,6 +75,8 @@ export default function CreateGroupModal({ closeModal, refetch }: ModalProps) {
   }
 
   function onSubmit(data: Inputs) {
+    setIsLoading(true)
+
     axios
       .post('/api/add-group', {
         name: data.title,
@@ -85,18 +84,19 @@ export default function CreateGroupModal({ closeModal, refetch }: ModalProps) {
         libraryIds: [],
         parentGroupId: null,
       })
-      .then(() => refetch())
+      .then(() => refetch?.())
       .catch((err) => {
         console.error(err)
       })
       .finally(() => {
+        setIsLoading(false)
         closeModal()
       })
   }
 
   const modalContent = (
-    <Overlay>
-      <Main ref={modalWrapperRef}>
+    <Overlay ref={overlayRef}>
+      <Main>
         <CloseIcon onClick={closeModal} />
         <StyledForm onSubmit={handleSubmit(onSubmit)}>
           <Head>
@@ -146,7 +146,9 @@ export default function CreateGroupModal({ closeModal, refetch }: ModalProps) {
             <PlusIcon />
             Add Member
           </AddEmail>
-          <StyledButton type="submit">Create</StyledButton>
+          <StyledButton type="submit" loading={isLoading}>
+            Create
+          </StyledButton>
         </StyledForm>
       </Main>
     </Overlay>
