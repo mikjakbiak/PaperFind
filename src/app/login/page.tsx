@@ -21,6 +21,7 @@ type Inputs = {
 
 export default function SignUpPage() {
   const [authError, setAuthError] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
   const prompt = searchParams?.get('prompt') === 'true' ? true : false
@@ -33,6 +34,10 @@ export default function SignUpPage() {
   } = useForm<Inputs>()
 
   function onSubmit(data: Inputs) {
+    if (isLoading) return
+
+    setIsLoading(true)
+
     axios
       .post('/api/auth/login', {
         email: data.email,
@@ -49,6 +54,9 @@ export default function SignUpPage() {
           console.error(err)
           setAuthError('Something went wrong')
         }
+      })
+      .finally(() => {
+        setIsLoading(false)
       })
   }
 
@@ -74,7 +82,9 @@ export default function SignUpPage() {
             placeholder="********"
             type="password"
           />
-          <StyledButton type="submit">Sign In</StyledButton>
+          <StyledButton type="submit" loading={isLoading}>
+            Sign In
+          </StyledButton>
         </StyledForm>
         {authError && <p>{authError}</p>}
       </Card>

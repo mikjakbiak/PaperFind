@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React from 'react'
+import { DotLoader } from 'react-spinners'
 
 type Props = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
   className?: string
@@ -7,13 +8,18 @@ type Props = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElemen
   variant?: 'default' | 'sidebar-primary' | 'sidebar-secondary'
   active?: boolean
   huge?: boolean
+  loading?: boolean
 }
 
 export default function Button(props: Props) {
-  const { children, variant = 'default' } = props
+  const { children, loading, type, huge, variant = 'default' } = props
   switch (variant) {
     case 'default':
-      return <Default {...props}>{children}</Default>
+      return (
+        <Default {...props} type={loading ? 'button' : type}>
+          {loading ? <DotLoader color="#2F31A8" size={huge ? '3.25rem' : '1.25rem'} /> : children}
+        </Default>
+      )
     case 'sidebar-primary':
       return <SidebarPrimary {...props}>{children}</SidebarPrimary>
     case 'sidebar-secondary':
@@ -21,7 +27,7 @@ export default function Button(props: Props) {
   }
 }
 
-const Default = styled.button<{ huge?: boolean }>`
+const Default = styled.button<{ huge?: boolean; loading?: boolean }>`
   background-color: #e6d840;
   color: #14203d;
   font-family: inherit;
@@ -34,8 +40,12 @@ const Default = styled.button<{ huge?: boolean }>`
   font-weight: bold;
   font-size: ${({ huge }) => (huge ? '3rem' : '1rem')};
 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
   &:hover {
-    cursor: pointer;
+    cursor: ${({ loading }) => (loading ? 'not-allowed' : 'pointer')};
   }
 `
 const SidebarPrimary = styled.button`
