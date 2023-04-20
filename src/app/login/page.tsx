@@ -23,7 +23,7 @@ export default function SignUpPage() {
   const [authError, setAuthError] = useState('')
   const router = useRouter()
   const searchParams = useSearchParams()
-  const prompt = searchParams.get('prompt') === 'true' ? true : false
+  const prompt = searchParams?.get('prompt') === 'true' ? true : false
 
   const {
     register,

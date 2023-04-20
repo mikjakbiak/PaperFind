@@ -10,7 +10,7 @@ import { HiArrowRight } from 'react-icons/hi'
 
 export default function LibrariesPage() {
   const searchParams = useSearchParams()
-  const libraryId = searchParams.get('id')
+  const libraryId = searchParams?.get('id')
 
   return (
     <Main>

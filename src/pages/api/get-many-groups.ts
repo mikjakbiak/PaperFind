@@ -3,11 +3,13 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { prisma } from 'src/shared/db'
 import { PaperPopulated } from './get-papers'
 
+export type LibraryPopulated = Library & {
+  papers: PaperPopulated[]
+}
+
 export type GroupPopulated = Group & {
   users: User[]
-  libraries: (Library & {
-    papers: PaperPopulated[]
-  })[]
+  libraries: LibraryPopulated[]
 }
 
 export default async function handler(

@@ -1,161 +1,98 @@
-'use client'
-
-import Card from 'src/app/components/Card'
-import StyledLink from 'src/app/components/StyledLink'
-import styled from '@emotion/styled'
-import axios from 'axios'
-import Link from 'next/link'
-import React, { useEffect, useState } from 'react'
-import { HiArrowRight } from 'react-icons/hi'
+import React from 'react'
+import CardsGrid from '@/components/CardsGrid'
+import { headers } from 'next/headers'
+import { prisma } from 'src/shared/db'
 import { PaperPopulated } from 'src/pages/api/get-papers'
 import { GroupPopulated } from 'src/pages/api/get-many-groups'
+import { ClientSideItem } from 'src/shared/db'
 
-export default function HomePage() {
-  const [groups, setGroups] = useState<GroupPopulated[]>([])
-  const [papers, setPapers] = useState<PaperPopulated[]>([])
-  useEffect(() => {
-    axios
-      .get<{
-        error: boolean
-        data: GroupPopulated[]
-      }>('/api/get-many-groups')
-      .then((res) => {
-        setGroups(res.data.data)
-      })
-      .catch((err) => {
-        console.error(err)
-      })
-  }, [])
+export default async function HomePage() {
+  const userId = headers().get('user-id')
+  //? Should never happen
+  if (!userId) return null
 
-  useEffect(() => {
-    axios
-      .get<{
-        error: boolean
-        data: PaperPopulated[]
-      }>('/api/get-papers')
-      .then((res) => {
-        setPapers(res.data.data)
+  const groups = (await prisma.group
+    .findMany({
+      where: {
+        userIds: {
+          has: userId,
+        },
+      },
+      include: {
+        users: true,
+        libraries: {
+          include: {
+            papers: {
+              include: {
+                authors: true,
+              },
+            },
+          },
+        },
+      },
+    })
+    .then((groups) => {
+      return groups.map((group) => {
+        return {
+          ...group,
+          created: group.created.toISOString(),
+          updated: group.updated.toISOString(),
+        }
       })
-      .catch((err) => {
-        console.error(err)
+    })
+    .catch((e) => {
+      console.error(e)
+      return []
+    })) as ClientSideItem<GroupPopulated>[]
+
+  const papers = (await prisma.paper
+    .findMany({
+      where: {
+        userId,
+      },
+      include: {
+        authors: true,
+      },
+    })
+    .then((papers) => {
+      return papers.map((paper) => {
+        return {
+          ...paper,
+          created: paper.created.toISOString(),
+          updated: paper.updated.toISOString(),
+          authors: paper.authors.map((author) => ({
+            ...author,
+            created: author.created.toISOString(),
+            updated: author.updated.toISOString(),
+          })),
+        }
       })
-  }, [])
+    })
+    .catch((e) => {
+      console.error(e)
+      return []
+    })) as ClientSideItem<PaperPopulated>[]
 
   return (
-    <Main>
-      <StyledCard>
-        <Heading>Research Groups</Heading>
-        <CardBody>
-          {groups.map((group) => (
-            <Link key={group.id} href={`/groups?id=${group.id}`}>
-              {group.name}
-            </Link>
-          ))}
-        </CardBody>
-        <StyledLink href="/groups">
-          See more <HiArrowRight size={20} />
-        </StyledLink>
-      </StyledCard>
-      <StyledCard>
-        <Heading>Libraries</Heading>
-        <CardBody>
-          <Link href="/papers/libraries?id=0">Library 1</Link>
-          <Link href="/papers/libraries?id=1">Library 2</Link>
-          <Link href="/papers/libraries?id=2">Library 3</Link>
-        </CardBody>
-        <StyledLink href="/papers/libraries">
-          See more <HiArrowRight size={20} />
-        </StyledLink>
-      </StyledCard>
-      <StyledCard>
-        <Heading>Papers</Heading>
-        <CardBody>
-          {papers.map((paper) => (
-            <Link key={paper.id} href={`/papers/${paper.id}`}>
-              <span>{paper.title}</span>
-              <span>
-                <span>{paper.authors[0]?.fName}</span>
-                <span>{paper.authors[0]?.lName}</span>
-              </span>
-            </Link>
-          ))}
-        </CardBody>
-        <StyledLink href="/papers">
-          See more <HiArrowRight size={20} />
-        </StyledLink>
-      </StyledCard>
-      <StyledCard>
-        <Heading>Tags</Heading>
-        <CardBody>
-          <Link href="/papers/tags?id=0">Tag 1</Link>
-          <Link href="/papers/tags?id=1">Tag 2</Link>
-          <Link href="/papers/tags?id=2">Tag 3</Link>
-        </CardBody>
-        <StyledLink href="/papers/tags">
-          See more <HiArrowRight size={20} />
-        </StyledLink>
-      </StyledCard>
-    </Main>
+    <CardsGrid
+      cards={[
+        {
+          title: 'Research Groups' as const,
+          items: groups,
+        },
+        // {
+        //   title: 'Libraries' as const,
+        //   items: libraries,
+        // },
+        {
+          title: 'Papers' as const,
+          items: papers,
+        },
+        // {
+        //   title: 'Tags' as const,
+        //   items: tags,
+        // },
+      ]}
+    />
   )
 }
-
-const Main = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(2, 1fr);
-
-  grid-gap: 1.5rem;
-`
-
-const StyledCard = styled(Card)`
-  display: grid;
-  grid-template-rows: min-content auto min-content;
-  grid-template-columns: 1fr;
-
-  height: 34vh;
-
-  > a {
-    justify-self: end;
-  }
-`
-
-const Heading = styled.h2`
-  text-align: center;
-  font-weight: 500;
-`
-
-const CardBody = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
-
-  height: 100%;
-  overflow-y: scroll;
-
-  row-gap: 16px;
-
-  > a {
-    text-decoration: none;
-    color: #fff;
-    width: 100%;
-    padding: 0.5rem 1rem;
-
-    box-sizing: border-box;
-
-    border-radius: 12px;
-    background-color: #282a8f;
-
-    &:hover {
-      background-color: #282a8f;
-    }
-
-    display: flex;
-    justify-content: space-between;
-
-    > span {
-      display: flex;
-      column-gap: 8px;
-    }
-  }
-`

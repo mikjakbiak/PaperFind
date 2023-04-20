@@ -8,7 +8,7 @@ import React from 'react'
 
 export default function Sidebar() {
   const searchParams = useSearchParams()
-  const libraryId = searchParams.get('id')
+  const libraryId = searchParams?.get('id')
 
   return (
     <Main>

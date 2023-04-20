@@ -25,9 +25,17 @@ export async function middleware(request: NextRequest) {
     if (error) {
       //? If token is expired, redirect to login page
       if (error === 'expired') {
-        return NextResponse.redirect(new URL('/login?session-expired=true', request.url))
+        const response = NextResponse.redirect(new URL('/login?session-expired=true', request.url))
+        response.cookies.set({
+          name: 'token',
+          value: '',
+          maxAge: 0,
+          path: '/',
+          httpOnly: true,
+        })
+        return response
       } else {
-        //? If token is invalid, redirect to login page
+        //? If token is invalid, redirect to landing page
         return NextResponse.redirect(new URL('/', request.url))
       }
     }

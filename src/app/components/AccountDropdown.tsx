@@ -1,5 +1,5 @@
 import { BsPersonCircle } from 'react-icons/bs'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { IoLogOutOutline } from 'react-icons/io5'
 import styled from '@emotion/styled'
 import axios from 'axios'
@@ -8,6 +8,10 @@ import { useRouter } from 'next/navigation'
 export default function AccountDropdown() {
   const [isOpen, setIsOpen] = useState(false)
   const router = useRouter()
+
+  useEffect(() => {
+    router.prefetch('/')
+  }, [])
 
   function logout() {
     axios.post('/api/auth/logout').then(() => {

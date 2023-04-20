@@ -13,6 +13,9 @@ export default function Header() {
   const pathname = usePathname()
 
   const Right = useMemo(() => {
+    router.prefetch('/login')
+    router.prefetch('/register')
+
     const landingPageJSX = (
       <Buttons>
         <StyledLink href="/login">Sign In</StyledLink>
@@ -21,6 +24,10 @@ export default function Header() {
     )
 
     if (!pathname) return landingPageJSX
+
+    router.prefetch('/home')
+    router.prefetch('/groups')
+    router.prefetch('/papers')
 
     const loggedInJSX = (
       <Container>
@@ -54,7 +61,7 @@ export default function Header() {
   )
 }
 
-const Main = styled.div`
+const Main = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: center;
