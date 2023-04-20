@@ -7,6 +7,7 @@ import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 import { HiPlus } from 'react-icons/hi'
 import { PaperPopulated } from 'src/pages/api/get-papers'
+import { NumBool } from 'src/types'
 
 export default function PapersPage() {
   const [papers, setPapers] = useState<PaperPopulated[]>([])
@@ -27,7 +28,7 @@ export default function PapersPage() {
   return (
     <Main>
       <Navigation>
-        <NavigationLink href="/papers" active>
+        <NavigationLink href="/papers" active={1}>
           Papers
         </NavigationLink>
         <NavigationLink href="/papers/tags">Tags</NavigationLink>
@@ -50,7 +51,7 @@ export default function PapersPage() {
           </thead>
           <tbody>
             {papers.map((paper, id) => (
-              <tr key={id}>
+              <tr key={paper.id + id}>
                 <td>{paper.title}</td>
                 <td>
                   {paper.authors[0]?.fName} {paper.authors[0]?.lName}
@@ -82,7 +83,7 @@ const Navigation = styled.div`
   width: 60%;
 `
 
-const NavigationLink = styled(Link)<{ active?: boolean }>`
+const NavigationLink = styled(Link)<{ active?: NumBool }>`
   text-decoration: none;
   color: white;
   font-size: 1.2rem;

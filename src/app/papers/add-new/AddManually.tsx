@@ -8,8 +8,10 @@ import axios from 'axios'
 import React, { useState } from 'react'
 import { HiMinus, HiPlus } from 'react-icons/hi'
 import { IoClose } from 'react-icons/io5'
+import { useRouter } from 'next/navigation'
 
 export default function AddManually({ close }: { close: () => void }) {
+  const router = useRouter()
   const [referenceType, setReferenceType] = useState('Journal Article')
   const [authors, setAuthors] = useState([{ fName: '', lName: '' }])
   const [journal, setJournal] = useState('')
@@ -54,7 +56,7 @@ export default function AddManually({ close }: { close: () => void }) {
     })
 
     if (res.status === 200) {
-      window.location.href = '/papers'
+      router.push('/papers')
     }
   }
 
@@ -91,7 +93,7 @@ export default function AddManually({ close }: { close: () => void }) {
             {authors.length > 1 && <MinusIcon onClick={() => removeAuthor(0)} />}
           </Author>
           {authors.slice(1).map((author, i) => (
-            <Author key={i + 1}>
+            <Author key={author.fName + author.lName + i}>
               <Input
                 type="text"
                 name="authors"

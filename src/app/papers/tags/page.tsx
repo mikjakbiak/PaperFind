@@ -3,13 +3,14 @@
 import styled from '@emotion/styled'
 import Link from 'next/link'
 import React from 'react'
+import { NumBool } from 'src/types'
 
 export default function TagsPage() {
   return (
     <Main>
       <Navigation>
         <NavigationLink href="/papers">Papers</NavigationLink>
-        <NavigationLink href="/papers/tags" active>
+        <NavigationLink href="/papers/tags" active={1}>
           Tags
         </NavigationLink>
       </Navigation>
@@ -36,7 +37,7 @@ const Navigation = styled.div`
   width: 60%;
 `
 
-const NavigationLink = styled(Link)<{ active?: boolean }>`
+const NavigationLink = styled(Link)<{ active?: NumBool }>`
   text-decoration: none;
   color: white;
   font-size: 1.2rem;

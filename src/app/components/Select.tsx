@@ -15,8 +15,8 @@ export default function Select({ label, value, onChange, options, full }: Props)
     <Default full={full}>
       {label && label}
       <select {...{ value, onChange }}>
-        {options.map((option) => (
-          <option key={option} value={option}>
+        {options.map((option, i) => (
+          <option key={option + i} value={option}>
             {option}
           </option>
         ))}

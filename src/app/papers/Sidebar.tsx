@@ -5,6 +5,7 @@ import styled from '@emotion/styled'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import React from 'react'
+import { NumBool } from 'src/types'
 
 export default function Sidebar() {
   const searchParams = useSearchParams()
@@ -14,22 +15,22 @@ export default function Sidebar() {
     <Main>
       <Button variant="sidebar-primary">New Library</Button>
       <Link href="/papers">
-        <Button variant="sidebar-secondary" active={!libraryId}>
+        <Button variant="sidebar-secondary" active={Number(!libraryId) as NumBool}>
           All Papers
         </Button>
       </Link>
       <Link href="/papers/libraries?id=0">
-        <Button variant="sidebar-secondary" active={libraryId === '0'}>
+        <Button variant="sidebar-secondary" active={Number(libraryId === '0') as NumBool}>
           Library 1
         </Button>
       </Link>
       <Link href="/papers/libraries?id=1">
-        <Button variant="sidebar-secondary" active={libraryId === '1'}>
+        <Button variant="sidebar-secondary" active={Number(libraryId === '1') as NumBool}>
           Library 2
         </Button>
       </Link>
       <Link href="/papers/libraries?id=2">
-        <Button variant="sidebar-secondary" active={libraryId === '2'}>
+        <Button variant="sidebar-secondary" active={Number(libraryId === '2') as NumBool}>
           Library 3
         </Button>
       </Link>

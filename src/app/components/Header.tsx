@@ -2,20 +2,26 @@
 
 import styled from '@emotion/styled'
 import { usePathname, useRouter } from 'next/navigation'
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import Button from './Button'
 import StyledLink from './StyledLink'
 import Link from 'next/link'
 import AccountDropdown from './AccountDropdown'
+import { NumBool } from 'src/types'
 
 export default function Header() {
   const router = useRouter()
   const pathname = usePathname()
 
-  const Right = useMemo(() => {
+  useEffect(() => {
     router.prefetch('/login')
     router.prefetch('/register')
+    router.prefetch('/home')
+    router.prefetch('/groups')
+    router.prefetch('/papers')
+  }, [])
 
+  const Right = useMemo(() => {
     const landingPageJSX = (
       <Buttons>
         <StyledLink href="/login">Sign In</StyledLink>
@@ -25,20 +31,16 @@ export default function Header() {
 
     if (!pathname) return landingPageJSX
 
-    router.prefetch('/home')
-    router.prefetch('/groups')
-    router.prefetch('/papers')
-
     const loggedInJSX = (
       <Container>
         <Navigation>
-          <NavigationLink href="/home" active={pathname.includes('home')}>
+          <NavigationLink href="/home" active={Number(pathname.includes('home')) as NumBool}>
             Home
           </NavigationLink>
-          <NavigationLink href="/groups" active={pathname.includes('groups')}>
+          <NavigationLink href="/groups" active={Number(pathname.includes('groups')) as NumBool}>
             Groups
           </NavigationLink>
-          <NavigationLink href="/papers" active={pathname.includes('papers')}>
+          <NavigationLink href="/papers" active={Number(pathname.includes('papers')) as NumBool}>
             Papers
           </NavigationLink>
         </Navigation>
@@ -95,7 +97,7 @@ const Navigation = styled.div`
   column-gap: 3rem;
 `
 
-const NavigationLink = styled(Link)<{ active?: boolean }>`
+const NavigationLink = styled(Link)<{ active?: NumBool }>`
   text-decoration: none;
   color: white;
   font-size: 1.2rem;

@@ -1,4 +1,4 @@
-import { Quicksand } from "next/font/google"
+import { Quicksand } from 'next/font/google'
 import Header from './components/Header'
 import { Providers } from './providers'
 
@@ -21,14 +21,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       >
         <Providers>
           <Header />
-          <div
+          <section
             style={{
               position: 'relative',
               margin: '5vh 5% 0 5%',
             }}
           >
             {children}
-          </div>
+          </section>
         </Providers>
         <div id="modal-root"></div>
       </body>

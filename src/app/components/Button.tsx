@@ -1,12 +1,15 @@
+'use-client'
+
 import styled from '@emotion/styled'
 import React from 'react'
 import { DotLoader } from 'react-spinners'
+import { NumBool } from 'src/types'
 
 type Props = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
   className?: string
   children: React.ReactNode
   variant?: 'default' | 'sidebar-primary' | 'sidebar-secondary'
-  active?: boolean
+  active?: NumBool //? hydration-error warning if boolean
   huge?: boolean
   loading?: boolean
 }
@@ -66,7 +69,7 @@ const SidebarPrimary = styled.button`
   }
 `
 
-const SidebarSecondary = styled.button<{ active?: boolean }>`
+const SidebarSecondary = styled.button<{ active?: NumBool }>`
   background-color: #19294d;
   color: #4d79e6;
   font-family: inherit;

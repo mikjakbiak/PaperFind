@@ -8,6 +8,7 @@ import CreateGroupModal from './CreateGroupModal'
 import Button from './Button'
 import Link from 'next/link'
 import { ClientSideItem } from 'src/shared/db'
+import { NumBool } from 'src/types'
 
 type Props = {
   _groups: ClientSideItem<GroupPopulated>[]
@@ -49,7 +50,7 @@ export default function Groups({ _groups, groupId }: Props) {
       </Button>
       {groups.map((group) => (
         <Link key={group.id} href={`/groups/${group.id}`}>
-          <Button variant="sidebar-secondary" active={groupId === group.id}>
+          <Button variant="sidebar-secondary" active={Number(groupId === group.id) as NumBool}>
             {group.name}
           </Button>
         </Link>

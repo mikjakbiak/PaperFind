@@ -37,6 +37,11 @@ export default async function HomePage() {
           ...group,
           created: group.created.toISOString(),
           updated: group.updated.toISOString(),
+          users: group.users.map((user) => ({
+            ...user,
+            created: user.created.toISOString(),
+            updated: user.updated.toISOString(),
+          })),
         }
       })
     })
