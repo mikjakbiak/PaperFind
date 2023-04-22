@@ -108,7 +108,7 @@ const Zone = styled.div`
 
   padding: 1.5rem 3rem;
   border-radius: 1rem;
-  background-color: #282a8f;
+  background-color: #2f31a8;
 `
 
 const Hidden = styled.div`

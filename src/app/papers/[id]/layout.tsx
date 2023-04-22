@@ -1,6 +1,8 @@
 import Sidebar from './Sidebar'
 
-export default function PapersLayout({ children }: { children: React.ReactNode }) {
+export default function PapersLayout({ children, params }: { children: React.ReactNode; params: { id: string } }) {
+  const id = params.id
+
   return (
     <section
       style={{
@@ -9,7 +11,8 @@ export default function PapersLayout({ children }: { children: React.ReactNode }
         columnGap: '1.5rem',
       }}
     >
-      <Sidebar />
+      {/* @ts-expect-error server component */}
+      <Sidebar id={id} />
       {children}
     </section>
   )

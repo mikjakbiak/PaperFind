@@ -1,34 +1,22 @@
 'use client'
 
-import StyledLink from 'src/app/components/StyledLink'
 import styled from '@emotion/styled'
-import axios from 'axios'
 import Link from 'next/link'
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { HiPlus } from 'react-icons/hi'
-import { PaperPopulated } from 'src/pages/api/get-papers'
-import { NumBool } from 'src/types'
+import { ClientSideItem } from 'src/shared/db'
+import { NumBool, PaperPopulated } from 'src/types'
+import StyledLink from './StyledLink'
 
-export default function PapersPage() {
-  const [papers, setPapers] = useState<PaperPopulated[]>([])
-  useEffect(() => {
-    axios
-      .get<{
-        error: boolean
-        data: PaperPopulated[]
-      }>('/api/get-papers')
-      .then((res) => {
-        setPapers(res.data.data)
-      })
-      .catch((err) => {
-        console.error(err)
-      })
-  }, [])
+type Props = {
+  papers: ClientSideItem<PaperPopulated>[]
+}
 
+export default function AllPapers({ papers }: Props) {
   return (
     <Main>
       <Navigation>
-        <NavigationLink href="/papers" active={1}>
+        <NavigationLink href="/papers/all" active={1}>
           Papers
         </NavigationLink>
         <NavigationLink href="/papers/tags">Tags</NavigationLink>

@@ -1,5 +1,5 @@
 import React from 'react'
-import Groups from '@/components/Groups'
+import Groups from '@/components/Sidebars/Groups'
 import { headers } from 'next/headers'
 import { prisma } from 'src/shared/db'
 import { GroupPopulated } from 'src/pages/api/get-many-groups'

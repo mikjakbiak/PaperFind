@@ -2,9 +2,9 @@ import React from 'react'
 import CardsGrid from '@/components/CardsGrid'
 import { headers } from 'next/headers'
 import { prisma } from 'src/shared/db'
-import { PaperPopulated } from 'src/pages/api/get-papers'
-import { GroupPopulated } from 'src/pages/api/get-many-groups'
+import { GroupPopulated, LibraryPopulated } from 'src/pages/api/get-many-groups'
 import { ClientSideItem } from 'src/shared/db'
+import { PaperPopulated } from 'src/types'
 
 export default async function HomePage() {
   const userId = headers().get('user-id')
@@ -50,6 +50,41 @@ export default async function HomePage() {
       return []
     })) as ClientSideItem<GroupPopulated>[]
 
+  const libraries = (await prisma.library
+    .findMany({
+      where: {
+        userId,
+      },
+      include: {
+        papers: {
+          include: {
+            authors: true,
+          },
+        },
+      },
+    })
+    .then((libraries) => {
+      return libraries.map((library) => ({
+        ...library,
+        created: library.created.toISOString(),
+        updated: library.updated.toISOString(),
+        papers: library.papers.map((paper) => ({
+          ...paper,
+          created: paper.created.toISOString(),
+          updated: paper.updated.toISOString(),
+          authors: paper.authors.map((author) => ({
+            ...author,
+            created: author.created.toISOString(),
+            updated: author.updated.toISOString(),
+          })),
+        })),
+      }))
+    })
+    .catch((e) => {
+      console.error(e)
+      return []
+    })) as ClientSideItem<LibraryPopulated>[]
+
   const papers = (await prisma.paper
     .findMany({
       where: {
@@ -85,10 +120,10 @@ export default async function HomePage() {
           title: 'Research Groups' as const,
           items: groups,
         },
-        // {
-        //   title: 'Libraries' as const,
-        //   items: libraries,
-        // },
+        {
+          title: 'Libraries' as const,
+          items: libraries,
+        },
         {
           title: 'Papers' as const,
           items: papers,

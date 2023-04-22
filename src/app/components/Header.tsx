@@ -18,7 +18,7 @@ export default function Header() {
     router.prefetch('/register')
     router.prefetch('/home')
     router.prefetch('/groups')
-    router.prefetch('/papers')
+    router.prefetch('/papers/all')
   }, [])
 
   const Right = useMemo(() => {
@@ -40,7 +40,7 @@ export default function Header() {
           <NavigationLink href="/groups" active={Number(pathname.includes('groups')) as NumBool}>
             Groups
           </NavigationLink>
-          <NavigationLink href="/papers" active={Number(pathname.includes('papers')) as NumBool}>
+          <NavigationLink href="/papers/all" active={Number(pathname.includes('papers')) as NumBool}>
             Papers
           </NavigationLink>
         </Navigation>

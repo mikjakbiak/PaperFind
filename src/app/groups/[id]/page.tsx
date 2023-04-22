@@ -1,9 +1,9 @@
 import React from 'react'
-import { PaperPopulated } from 'src/pages/api/get-papers'
 import CardsGrid from '@/components/CardsGrid'
 import { ClientSideItem, prisma } from 'src/shared/db'
 import { LibraryPopulated } from 'src/pages/api/get-many-groups'
 import { User } from '@prisma/client'
+import { PaperPopulated } from 'src/types'
 
 export default async function GroupsPage({ params }: { params: { id: string } }) {
   const groupId = params.id

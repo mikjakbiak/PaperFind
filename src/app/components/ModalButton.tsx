@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import Button from './Button'
-import CreateGroupModal from './CreateGroupModal'
+import CreateGroupModal from './Modals/CreateGroupModal'
 
 export default function ModalButton({ refetch }: { refetch?: () => void }) {
   const [showModal, setShowModal] = useState(false)

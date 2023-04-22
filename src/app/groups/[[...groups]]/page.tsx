@@ -5,6 +5,7 @@ import { headers } from 'next/headers'
 import ModalButton from '@/components/ModalButton'
 
 export default async function GroupsPage() {
+  // TODO all groups
   const userId = headers().get('user-id')
   const groupId = await prisma.group
     .findFirst({

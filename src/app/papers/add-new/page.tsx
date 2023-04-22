@@ -5,8 +5,8 @@ import StyledLink from 'src/app/components/StyledLink'
 import styled from '@emotion/styled'
 import React, { useState } from 'react'
 import { HiArrowLeft } from 'react-icons/hi'
-import AddManually from './AddManually'
-import Dropzone from './Dropzone'
+import Dropzone from '@/components/Dropzone'
+import AddManually from '@/components/LibraryNewPaper/AddManually'
 
 export default function AddNewPage() {
   const [addManually, setAddManually] = useState(false)
@@ -14,7 +14,7 @@ export default function AddNewPage() {
   return (
     <Main>
       <Back>
-        <StyledLink href="/papers">
+        <StyledLink href="/papers/all">
           <ArrowIcon />
           Back
         </StyledLink>
@@ -22,7 +22,7 @@ export default function AddNewPage() {
       <Content>
         <Dropzone />
         {addManually ? (
-          <AddManually close={() => setAddManually(false)} />
+          <AddManually close={() => setAddManually(false)} to="all" />
         ) : (
           <Button onClick={() => setAddManually(true)}>Add Manually</Button>
         )}

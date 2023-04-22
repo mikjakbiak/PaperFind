@@ -1,10 +1,6 @@
-import { Author, Paper } from '@prisma/client'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { prisma } from 'src/shared/db'
-
-export type PaperPopulated = Paper & {
-  authors: Author[]
-}
+import { PaperPopulated } from 'src/types'
 
 export default async function handler(
   req: NextApiRequest,

@@ -1,15 +1,15 @@
-import React, { useEffect, useRef, useState } from 'react'
-import ReactDOM from 'react-dom'
+import React, { useState } from 'react'
 import styled from '@emotion/styled'
 import { useFieldArray, useForm } from 'react-hook-form'
 import axios from 'axios'
 import { UserResponse } from 'src/pages/api/is-email-available'
-import Input from './Input'
-import Button from './Button'
-import { IoClose } from 'react-icons/io5'
+import Input from '../Input'
+import Button from '../Button'
 import { HiCheck, HiMinus, HiPlus } from 'react-icons/hi'
-import Icon from './Icon'
+import Icon from '../Icon'
 import { MdModeEdit } from 'react-icons/md'
+import { NumBool } from 'src/types'
+import BaseModal from './BaseModal'
 
 interface ModalProps {
   closeModal: () => void
@@ -22,7 +22,6 @@ type Inputs = {
 }
 
 export default function CreateGroupModal({ closeModal, refetch }: ModalProps) {
-  const [isBrowser, setIsBrowser] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const {
@@ -41,26 +40,6 @@ export default function CreateGroupModal({ closeModal, refetch }: ModalProps) {
     name: 'users',
     control,
   })
-
-  const overlayRef = useRef<HTMLDivElement>(null)
-
-  const backDropHandler = (e: MouseEvent) => {
-    if (overlayRef.current === e.target) {
-      closeModal()
-    }
-  }
-
-  useEffect(() => {
-    setIsBrowser(true)
-  }, [])
-
-  useEffect(() => {
-    if (isBrowser) {
-      window.addEventListener('click', backDropHandler)
-    }
-
-    return () => window.removeEventListener('click', backDropHandler)
-  }, [isBrowser])
 
   async function isEmailInDb(email: string) {
     return await axios
@@ -94,99 +73,63 @@ export default function CreateGroupModal({ closeModal, refetch }: ModalProps) {
       })
   }
 
-  const modalContent = (
-    <Overlay ref={overlayRef}>
-      <Main>
-        <CloseIcon onClick={closeModal} />
-        <StyledForm onSubmit={handleSubmit(onSubmit)}>
-          <Head>
-            {isEditing ? (
-              <>
-                <TitleInput
-                  {...register('title', { required: true, validate: () => !isEditing })}
-                  placeholder={watch('title')}
-                />
-                <CheckIcon size={20} onClick={() => setIsEditing(false)} />
-              </>
-            ) : (
-              <>
-                <Heading>{watch('title')}</Heading>
-                <EditIcon size={20} onClick={() => setIsEditing(true)} />
-              </>
-            )}
-          </Head>
-          <Email>
+  return (
+    <BaseModal closeModal={closeModal}>
+      <StyledForm onSubmit={handleSubmit(onSubmit)}>
+        <Head>
+          {isEditing ? (
+            <>
+              <TitleInput
+                {...register('title', { required: true, validate: () => !isEditing })}
+                placeholder={watch('title')}
+              />
+              <CheckIcon size={20} onClick={() => setIsEditing(false)} />
+            </>
+          ) : (
+            <>
+              <Heading>{watch('title')}</Heading>
+              <EditIcon size={20} onClick={() => setIsEditing(true)} />
+            </>
+          )}
+        </Head>
+        <Email>
+          <Input
+            {...register('users.0.email', {
+              required: true,
+              pattern: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
+              validate: async (value) => (await isEmailInDb(value)) || 'There is no user with this email',
+            })}
+            label="Members"
+            placeholder="email@example.com"
+            full
+          />
+          {fields.length > 1 && <MinusIcon onClick={() => remove(0)} />}
+        </Email>
+        {fields.slice(1).map((field, i) => (
+          <Email key={field.id}>
             <Input
-              {...register('users.0.email', {
+              {...register(`users.${i + 1}.email`, {
                 required: true,
                 pattern: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
                 validate: async (value) => (await isEmailInDb(value)) || 'There is no user with this email',
               })}
-              label="Members"
               placeholder="email@example.com"
               full
             />
-            {fields.length > 1 && <MinusIcon onClick={() => remove(0)} />}
+            <MinusIcon onClick={() => remove(i + 1)} />
           </Email>
-          {fields.slice(1).map((field, i) => (
-            <Email key={field.id}>
-              <Input
-                {...register(`users.${i + 1}.email`, {
-                  required: true,
-                  pattern: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
-                  validate: async (value) => (await isEmailInDb(value)) || 'There is no user with this email',
-                })}
-                placeholder="email@example.com"
-                full
-              />
-              <MinusIcon onClick={() => remove(i + 1)} />
-            </Email>
-          ))}
-          <AddEmail type="button" onClick={() => append({ email: '' })}>
-            <PlusIcon />
-            Add Member
-          </AddEmail>
-          <StyledButton type="submit" loading={isLoading}>
-            Create
-          </StyledButton>
-        </StyledForm>
-      </Main>
-    </Overlay>
+        ))}
+        <AddEmail type="button" onClick={() => append({ email: '' })}>
+          <PlusIcon />
+          Add Member
+        </AddEmail>
+        <StyledButton type="submit" loading={Number(isLoading) as NumBool}>
+          Create
+        </StyledButton>
+      </StyledForm>
+    </BaseModal>
   )
-
-  if (isBrowser) {
-    return ReactDOM.createPortal(modalContent, document.getElementById('modal-root')!)
-  } else {
-    return null
-  }
 }
-const Overlay = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: rgba(0, 0, 0, 0.5);
-`
-
-const Main = styled.div`
-  box-sizing: border-box;
-
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
-
-  row-gap: 1rem;
-
-  background-color: #2f31a8;
-  border-radius: 1rem;
-  padding: 2rem 3rem;
-`
 
 const StyledForm = styled.form`
   display: flex;
@@ -260,12 +203,6 @@ const AddEmail = styled.button`
 
 const StyledButton = styled(Button)`
   margin-top: 2rem;
-`
-
-const CloseIcon = styled(Icon(IoClose))`
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
 `
 
 const EditIcon = Icon(MdModeEdit)

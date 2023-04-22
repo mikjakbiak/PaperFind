@@ -4,11 +4,11 @@ import React, { useEffect, useState } from 'react'
 import { GroupPopulated } from 'src/pages/api/get-many-groups'
 import axios from 'axios'
 import styled from '@emotion/styled'
-import Button from './Button'
+import Button from '../Button'
 import Link from 'next/link'
 import { ClientSideItem } from 'src/shared/db'
 import { NumBool } from 'src/types'
-import ModalButton from './ModalButton'
+import ModalButton from '../ModalButton'
 
 type Props = {
   _groups: ClientSideItem<GroupPopulated>[]
@@ -24,20 +24,16 @@ export default function Groups({ _groups, groupId }: Props) {
     axios
       .get<{
         error: boolean
-        data: GroupPopulated[]
+        data: ClientSideItem<GroupPopulated>[]
       }>('/api/get-many-groups')
       .then((res) => {
-        const data = res.data.data.map((group) => {
-          return {
-            ...group,
-            created: group.created.toISOString(),
-            updated: group.updated.toISOString(),
-          }
-        })
-        setGroups(data)
+        setGroups(res.data.data)
       })
       .catch((err) => {
         console.error(err)
+      })
+      .finally(() => {
+        setRefetch(false)
       })
   }, [refetch])
 

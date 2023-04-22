@@ -1,18 +1,32 @@
-'use client'
-
 import Button from 'src/app/components/Button'
 import Input from 'src/app/components/Input'
 import Select from 'src/app/components/Select'
 import styled from '@emotion/styled'
-import axios from 'axios'
+import axios, { AxiosResponse } from 'axios'
 import React, { useState } from 'react'
 import { HiMinus, HiPlus } from 'react-icons/hi'
 import { IoClose } from 'react-icons/io5'
 import { useRouter } from 'next/navigation'
+import { AddNewPaperManualDto, AddNewPaperManualResponse } from 'src/pages/api/add-paper/manual'
+import { ReferenceType } from '@prisma/client'
 
-export default function AddManually({ close }: { close: () => void }) {
+type AddToAllProps = {
+  to: 'all'
+}
+
+type AddToLibraryProps = {
+  to: 'library'
+  libraryId: string
+}
+
+type Props = (AddToAllProps | AddToLibraryProps) & {
+  close: () => void
+}
+
+export default function AddManually(props: Props) {
+  const { to, close } = props
   const router = useRouter()
-  const [referenceType, setReferenceType] = useState('Journal Article')
+  const [refType, setRefType] = useState('Journal Article')
   const [authors, setAuthors] = useState([{ fName: '', lName: '' }])
   const [journal, setJournal] = useState('')
   const [volume, setVolume] = useState('')
@@ -41,7 +55,14 @@ export default function AddManually({ close }: { close: () => void }) {
   }
 
   async function addNewPaper() {
-    const res = await axios.post('/api/add-paper/manual', {
+    const libraryId = to === 'library' ? props.libraryId : undefined
+    const referenceType = refType === 'Journal Article' ? ReferenceType.ARTICLE : ReferenceType.BOOK
+
+    const { data, status } = await axios.post<
+      AddNewPaperManualResponse,
+      AxiosResponse<AddNewPaperManualResponse>,
+      AddNewPaperManualDto
+    >('/api/add-paper/manual', {
       referenceType,
       authors,
       journal,
@@ -53,10 +74,22 @@ export default function AddManually({ close }: { close: () => void }) {
       day,
       title,
       abstract,
+      libraryId,
     })
 
-    if (res.status === 200) {
-      router.push('/papers')
+    let paperAttachStatus: number = -1
+
+    if (libraryId) {
+      paperAttachStatus = (
+        await axios.post('/api/library-attach-papers', {
+          libraryId,
+          paperIds: [data.paperId],
+        })
+      ).status
+    }
+
+    if (status === 200 && paperAttachStatus === 200) {
+      router.push(to === 'all' ? '/papers/all' : `/papers/lib-${libraryId}`)
     }
   }
 
@@ -66,11 +99,11 @@ export default function AddManually({ close }: { close: () => void }) {
       <Select
         label="Reference Type"
         options={['Journal Article', 'Book']}
-        value={referenceType}
-        onChange={(e) => setReferenceType(e.target.value)}
+        value={refType}
+        onChange={(e) => setRefType(e.target.value)}
         full
       />
-      {referenceType === 'Journal Article' && (
+      {refType === 'Journal Article' && (
         <>
           <Author>
             <Input
@@ -192,7 +225,7 @@ const Main = styled.div`
 
   padding: 2rem 3rem;
   border-radius: 1rem;
-  background-color: #282a8f;
+  background-color: #2f31a8;
 
   > svg {
     position: absolute;
