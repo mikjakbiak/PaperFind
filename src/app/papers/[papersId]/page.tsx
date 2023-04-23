@@ -16,32 +16,36 @@ export default async function PapersPage({ params }: { params: { papersId: strin
 
   const papers = await getPapers('user', userId)
 
-  const library = (await prisma.library
-    .findUnique({
-      where: {
-        id: libraryId,
-      },
+  const library = (
+    libraryId
+      ? await prisma.library
+          .findUnique({
+            where: {
+              id: libraryId,
+            },
 
-      include: {
-        papers: {
-          include: {
-            authors: true,
-          },
-        },
-      },
-    })
-    .then((library) => {
-      if (!library) return null
-      return {
-        ...library,
-        created: library.created.toISOString(),
-        updated: library.updated.toISOString(),
-      }
-    })
-    .catch((e) => {
-      console.error(e)
-      return null
-    })) as ClientSideItem<LibraryPopulated> | null
+            include: {
+              papers: {
+                include: {
+                  authors: true,
+                },
+              },
+            },
+          })
+          .then((library) => {
+            if (!library) return null
+            return {
+              ...library,
+              created: library.created.toISOString(),
+              updated: library.updated.toISOString(),
+            }
+          })
+          .catch((e) => {
+            console.error(e)
+            return null
+          })
+      : null
+  ) as ClientSideItem<LibraryPopulated> | null
 
   const libraryPapers = library?.papers.map<ClientSideItem<PaperPopulated>>((paper) => ({
     ...paper,
