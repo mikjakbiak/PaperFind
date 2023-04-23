@@ -34,31 +34,32 @@ export default function SignUpPage() {
     formState: { errors },
   } = useForm<Inputs>()
 
-  function onSubmit(data: Inputs) {
+  async function onSubmit(data: Inputs) {
     if (isLoading) return
 
     setIsLoading(true)
 
-    axios
-      .post('/api/auth/login', {
+    try {
+      await axios.post('/api/auth/login', {
         email: data.email,
         password: data.password,
       })
-      .then(() => {
-        setAuthError('')
-        router.push('/home')
-      })
-      .catch((err) => {
-        if (err.response.status === 401) {
-          setAuthError('Invalid email or password')
-        } else {
-          console.error(err)
-          setAuthError('Something went wrong')
-        }
-      })
-      .finally(() => {
-        setIsLoading(false)
-      })
+
+      console.log('then')
+      setAuthError('')
+      router.push('/home')
+      console.log('after push')
+    } catch (err: any) {
+      if (err.response.status === 401) {
+        setAuthError('Invalid email or password')
+      } else {
+        console.error(err)
+        setAuthError('Something went wrong')
+      }
+    }
+
+    console.log('after try catch')
+    setIsLoading(false)
   }
 
   return (

@@ -37,5 +37,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   const token = await generateJWT(id)
 
   res.setHeader('Set-Cookie', `token=${token}; Path=/; HttpOnly`)
+  console.log('cookie set')
   res.status(200).end()
 }

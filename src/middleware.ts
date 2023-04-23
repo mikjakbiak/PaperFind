@@ -14,9 +14,12 @@ export async function middleware(request: NextRequest) {
     console.log('middleware protected route', request.nextUrl.pathname)
     //? Get token from cookies
     const token = request.cookies.get('token')?.value
+
+    console.log({ token: request.cookies.get('token'), value: token, all: request.cookies.getAll() })
     //? If token is not present, redirect to login page
     if (!token) {
-      return NextResponse.redirect(new URL('/login?prompt=true', request.url))
+      // return NextResponse.redirect(new URL('/login?prompt=true', request.url))
+      return NextResponse.redirect(new URL('/', request.url))
     }
 
     //? Verify token and get user id
