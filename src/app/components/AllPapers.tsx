@@ -20,7 +20,7 @@ export default function AllPapers({ papers }: Props) {
         <NavigationLink href="/papers/all" active={1}>
           Papers
         </NavigationLink>
-        <NavigationLink href="/papers/tags">Tags</NavigationLink>
+        <NavigationLink href="/papers/tag/tags">Tags</NavigationLink>
       </Navigation>
       <AddNew>
         <StyledLink href="/papers/add-new">

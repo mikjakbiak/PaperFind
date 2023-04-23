@@ -9,8 +9,8 @@ export default function TagsPage() {
   return (
     <Main>
       <Navigation>
-        <NavigationLink href="/papers">Papers</NavigationLink>
-        <NavigationLink href="/papers/tags" active={1}>
+        <NavigationLink href="/papers/all">Papers</NavigationLink>
+        <NavigationLink href="/papers/tag/tags" active={1}>
           Tags
         </NavigationLink>
       </Navigation>
