@@ -5,8 +5,8 @@ import { LibraryPopulated } from 'src/pages/api/get-many-groups'
 import { User } from '@prisma/client'
 import { PaperPopulated } from 'src/types'
 
-export default async function GroupsPage({ params }: { params: { id: string } }) {
-  const groupId = params.id
+export default async function GroupsPage({ params }: { params: { groupId: string } }) {
+  const groupId = params.groupId
   const group = await prisma.group
     .findUnique({
       where: {

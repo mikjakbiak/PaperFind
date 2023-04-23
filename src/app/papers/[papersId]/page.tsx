@@ -7,11 +7,11 @@ import { LibraryPopulated } from 'src/pages/api/get-many-groups'
 import Library from '@/components/Library'
 import { getPapers } from 'src/dbQueries/getPapers'
 
-export default async function PapersPage({ params }: { params: { id: string } }) {
+export default async function PapersPage({ params }: { params: { papersId: string } }) {
   const userId = headers().get('user-id')
   if (!userId) return null
 
-  const id = params.id
+  const id = params.papersId
   const libraryId = id.includes('lib') ? id.split('-')[1] : undefined
 
   const papers = await getPapers(userId)

@@ -1,7 +1,13 @@
 import Sidebar from './Sidebar'
 
-export default function PapersLayout({ children, params }: { children: React.ReactNode; params: { id: string } }) {
-  const id = params.id
+export default function PapersLayout({
+  children,
+  params,
+}: {
+  children: React.ReactNode
+  params: { papersId: string }
+}) {
+  const id = params.papersId
 
   return (
     <section

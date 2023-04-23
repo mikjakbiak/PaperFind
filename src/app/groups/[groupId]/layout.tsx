@@ -1,6 +1,6 @@
 import Sidebar from '../[[...groups]]/Sidebar'
 
-export default function GroupsLayout({ children, params }: { children: React.ReactNode; params: { id: string } }) {
+export default function GroupsLayout({ children, params }: { children: React.ReactNode; params: { groupId: string } }) {
   return (
     <section
       style={{
@@ -10,7 +10,7 @@ export default function GroupsLayout({ children, params }: { children: React.Rea
       }}
     >
       {/* @ts-expect-error server component */}
-      <Sidebar groupId={params.id} />
+      <Sidebar groupId={params.groupId} />
       {children}
     </section>
   )
