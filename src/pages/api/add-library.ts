@@ -8,24 +8,41 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   if (!userId) return res.status(401).end()
 
   const newLibraryName = req.body.name as Library['name']
+  const groupId = req.body.groupId as Library['groupId']
 
   const library = await prisma.library.create({
     data: {
       name: newLibraryName,
-      userId,
+      userId: groupId ? undefined : userId,
+      groupId,
     },
   })
 
-  await prisma.user.update({
-    where: {
-      id: userId,
-    },
-    data: {
-      libraryIds: {
-        push: library.id,
+  if (groupId) {
+    await prisma.group.update({
+      where: { id: groupId },
+      data: {
+        libraries: {
+          connect: {
+            id: library.id,
+          },
+        },
       },
-    },
-  })
+    })
+  } else {
+    await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        libraries: {
+          connect: {
+            id: library.id,
+          },
+        },
+      },
+    })
+  }
 
   res.status(200).end()
 }

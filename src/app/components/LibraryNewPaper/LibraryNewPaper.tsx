@@ -5,12 +5,12 @@ import StyledLink from 'src/app/components/StyledLink'
 import styled from '@emotion/styled'
 import React, { useEffect, useState } from 'react'
 import { HiArrowLeft } from 'react-icons/hi'
-import AddManually from './AddManually'
 import Dropzone from '../Dropzone'
 import { usePathname } from 'next/navigation'
 import { ClientSideItem } from 'src/shared/db'
 import { Paper } from '@prisma/client'
 import AddFromPapers from './AddFromPapers'
+import AddManually from './AddManually'
 
 type Props = {
   libraryId: string
@@ -40,7 +40,7 @@ export default function LibraryNewPaper({ libraryId, papers }: Props) {
         </StyledLink>
       </Back>
       <Content>
-        <Dropzone />
+        <Dropzone libraryIds={[libraryId]} />
         {addManually ? (
           <AddManually close={() => setAddManually(false)} to="library" libraryId={libraryId} />
         ) : addFromPapers ? (

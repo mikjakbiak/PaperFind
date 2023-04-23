@@ -2,8 +2,9 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import { prisma } from 'src/shared/db'
 
 export type UpdateLibraryDto = {
-  libraryId: string
+  libraryIds: string[]
   paperIds: string[]
+  groupId?: string
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<{}>) {
@@ -11,18 +12,31 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   //? Should never happen
   if (!userId) return res.status(401).end()
 
-  const { libraryId, paperIds } = req.body as UpdateLibraryDto
+  const { libraryIds, paperIds, groupId } = req.body as UpdateLibraryDto
 
-  await prisma.library.update({
-    where: {
-      id: libraryId,
-    },
-    data: {
-      papers: {
-        connect: paperIds.map((id) => ({ id })),
-      },
-    },
-  })
+  await Promise.all(
+    paperIds.map((paperId) => {
+      const libraries = {
+        libraries: {
+          connect: libraryIds.map((libraryId) => ({ id: libraryId })),
+        },
+      }
+      const data = groupId
+        ? {
+            ...libraries,
+            group: {
+              connect: {
+                id: groupId,
+              },
+            },
+          }
+        : libraries
+      return prisma.paper.update({
+        where: { id: paperId },
+        data,
+      })
+    })
+  )
 
   res.status(200).end()
 }

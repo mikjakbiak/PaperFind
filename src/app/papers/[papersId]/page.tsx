@@ -14,7 +14,7 @@ export default async function PapersPage({ params }: { params: { papersId: strin
   const id = params.papersId
   const libraryId = id.includes('lib') ? id.split('-')[1] : undefined
 
-  const papers = await getPapers(userId)
+  const papers = await getPapers('user', userId)
 
   const library = (await prisma.library
     .findUnique({

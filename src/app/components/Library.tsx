@@ -52,6 +52,7 @@ export default function Library({ library, papers }: Props) {
           <SettingsButton title="Group Settings" size={40} onClick={() => setShowModal(true)} />
         </Right>
       </Head>
+      {/* In the future the Tags will be supported */}
       <CardsGrid
         cards={[
           {

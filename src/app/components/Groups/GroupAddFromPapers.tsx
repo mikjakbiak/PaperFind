@@ -1,8 +1,8 @@
 import styled from '@emotion/styled'
 import { Paper } from '@prisma/client'
 import axios from 'axios'
-import { usePathname, useRouter } from 'next/navigation'
-import React, { useEffect, useState } from 'react'
+import { useParams, useRouter } from 'next/navigation'
+import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { IoClose } from 'react-icons/io5'
 import { ClientSideItem } from 'src/shared/db'
@@ -12,7 +12,8 @@ import Checkbox from '../Checkbox'
 import Icon from '../Icon'
 
 type Props = {
-  libraryId: string
+  title: string
+  libraryIds: string[]
   papers: ClientSideItem<Paper>[]
   close: () => void
 }
@@ -21,11 +22,10 @@ type Inputs = {
   chosePapers: string[]
 }
 
-export default function AddFromPapers({ libraryId, papers, close }: Props) {
+export default function GroupAddFromPapers({ title, libraryIds, papers, close }: Props) {
   const router = useRouter()
-  const pathname = usePathname()
+  const params = useParams()
   const [isLoading, setIsLoading] = useState(false)
-  const [previousPath, setPreviousPath] = useState('')
 
   const {
     register,
@@ -37,24 +37,17 @@ export default function AddFromPapers({ libraryId, papers, close }: Props) {
     },
   })
 
-  useEffect(() => {
-    if (!pathname) return
-    const pathParts = pathname.split('/')
-    pathParts.pop()
-
-    setPreviousPath(pathParts.join('/'))
-  }, [pathname])
-
   async function onSubmit(data: Inputs) {
     setIsLoading(true)
 
     const res = await axios.post('/api/library-attach-papers', {
-      libraryIds: [libraryId],
+      libraryIds,
       paperIds: data.chosePapers,
+      groupId: params?.groupId as string,
     })
 
-    if (res.status === 200) {
-      router.push(previousPath)
+    if (res.status === 200 && params?.groupId) {
+      router.push(`/groups/${params.groupId}`)
     }
   }
 
@@ -62,12 +55,19 @@ export default function AddFromPapers({ libraryId, papers, close }: Props) {
     <Main>
       <CloseIcon onClick={close} />
       <StyledForm onSubmit={handleSubmit(onSubmit)}>
-        {papers.map((paper, i) => (
-          <Checkbox {...register('chosePapers')} key={paper.id + i} value={paper.id} checkbox_title={paper.title} />
-        ))}
-        <StyledButton type="submit" loading={Number(isLoading) as NumBool}>
-          Submit
-        </StyledButton>
+        <Title>{title}</Title>
+        {papers.length ? (
+          <>
+            {papers.map((paper, i) => (
+              <Checkbox {...register('chosePapers')} key={paper.id + i} value={paper.id} checkbox_title={paper.title} />
+            ))}
+            <StyledButton type="submit" loading={Number(isLoading) as NumBool}>
+              Submit
+            </StyledButton>
+          </>
+        ) : (
+          <p>No papers found</p>
+        )}
       </StyledForm>
     </Main>
   )
@@ -85,13 +85,12 @@ const Main = styled.div`
 
   row-gap: 1rem;
 
-  padding: 2rem 3rem;
   border-radius: 1rem;
   background-color: #2f31a8;
 
   > svg {
     position: absolute;
-    top: 1rem;
+    top: 0.25rem;
     right: 1rem;
     cursor: pointer;
   }
@@ -104,9 +103,15 @@ const StyledForm = styled.form`
   align-items: flex-start;
 
   height: 100%;
+  width: 100%;
   overflow-y: scroll;
 
   row-gap: 16px;
+`
+
+const Title = styled.h1`
+  font-size: 1.25rem;
+  margin: 0;
 `
 
 const StyledButton = styled(Button)`

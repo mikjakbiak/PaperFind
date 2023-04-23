@@ -8,7 +8,7 @@ export default async function AddNewPage({ params }: { params: { papersId: strin
   const userId = headers().get('user-id')
   if (!userId) return null
 
-  const papers = await getPapers(userId)
+  const papers = await getPapers('user', userId)
 
   return <LibraryNewPaper libraryId={libraryId} papers={papers} />
 }

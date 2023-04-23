@@ -16,18 +16,15 @@ export type AddNewPaperManualDto = {
     from: string
     to: string
   }
-  libraryId?: string
+  groupId?: string
+  libraryIds?: string[]
   authors: {
     fName: string
     lName: string
   }[]
 }
 
-export type AddNewPaperManualResponse = {
-  paperId: string
-}
-
-export default async function handler(req: NextApiRequest, res: NextApiResponse<AddNewPaperManualResponse>) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse<{}>) {
   const userId = req.headers['user-id'] as string
   //? Should never happen
   if (!userId) return res.status(401).end()
@@ -35,9 +32,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   const body = req.body as AddNewPaperManualDto
   const authors = body.authors
 
-  const { id } = await prisma.paper.create({
+  await prisma.paper.create({
     data: {
-      userId,
+      user: {
+        connect: {
+          id: body.groupId ? undefined : userId,
+        },
+      },
+      group: {
+        connect: {
+          id: body.groupId,
+        },
+      },
       type: body.referenceType,
       title: body.title,
       abstract: body.abstract,
@@ -48,15 +54,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       volume: parseInt(body.volume),
       issue: parseInt(body.issue),
       pages: [parseInt(body.pages.from), parseInt(body.pages.to)],
-      libraryId: body.libraryId,
       authors: {
         create: authors.map((author: { fName: string; lName: string }) => ({
           fName: author.fName,
           lName: author.lName,
         })),
       },
+      libraries: {
+        connect: body.libraryIds?.map((id) => ({ id })),
+      },
     },
   })
 
-  res.status(200).json({ paperId: id })
+  res.status(200).end()
 }

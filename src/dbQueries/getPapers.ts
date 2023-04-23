@@ -1,12 +1,35 @@
 import { PaperPopulated } from 'src/types'
 import { ClientSideItem, prisma } from '../shared/db'
 
-export async function getPapers(userId: string) {
+export async function getPapers(of: 'user' | 'group' | 'library', id: string) {
+  const where = (() => {
+    switch (of) {
+      case 'group':
+        return {
+          group: {
+            id,
+          },
+        }
+      case 'library':
+        return {
+          libraries: {
+            some: {
+              id,
+            },
+          },
+        }
+      case 'user':
+        return {
+          user: {
+            id,
+          },
+        }
+    }
+  })()
+
   const papers = (await prisma.paper
     .findMany({
-      where: {
-        userId,
-      },
+      where,
       include: {
         authors: true,
       },

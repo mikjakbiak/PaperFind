@@ -10,12 +10,14 @@ import Icon from '../Icon'
 import { MdModeEdit } from 'react-icons/md'
 import { NumBool } from 'src/types'
 import BaseModal from './BaseModal'
-import { useParams } from 'next/navigation'
+import { IoTrashBin } from 'react-icons/io5'
+import { TiUserDelete } from 'react-icons/ti'
 
 interface ModalProps {
+  name: string
+  groupId: string
   closeModal: () => void
-  refetch?: () => void
-  createNestedGroup?: boolean
+  refetch?: (action: 'refresh' | 'redirect') => void
 }
 
 type Inputs = {
@@ -23,22 +25,16 @@ type Inputs = {
   users: { email: string }[]
 }
 
-export default function CreateGroupModal({ closeModal, refetch, createNestedGroup }: ModalProps) {
-  const params = useParams()
-  const [isEditing, setIsEditing] = useState(false)
+export default function GroupSettingsModal({ name, groupId, closeModal, refetch }: ModalProps) {
   const [isLoading, setIsLoading] = useState(false)
+  const [isLeaving, setIsLeaving] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
   const {
     register,
     handleSubmit,
-    watch,
     control,
     formState: { errors },
-  } = useForm<Inputs>({
-    defaultValues: {
-      title: 'Research Group',
-      users: [{ email: '' }],
-    },
-  })
+  } = useForm<Inputs>()
   const { fields, remove, append } = useFieldArray({
     name: 'users',
     control,
@@ -56,18 +52,63 @@ export default function CreateGroupModal({ closeModal, refetch, createNestedGrou
       })
   }
 
-  function onSubmit(data: Inputs) {
+  async function leaveGroup() {
+    setIsLeaving(true)
+
+    await axios
+      .post('/api/leave-group', {
+        groupId,
+      })
+      .then(() => refetch?.('redirect'))
+      .catch((err) => {
+        console.error(err)
+      })
+      .finally(() => {
+        setIsLeaving(false)
+        closeModal()
+      })
+  }
+
+  async function deleteGroup() {
+    setIsDeleting(true)
+
+    await axios
+      .post('/api/delete-group', {
+        groupId,
+      })
+      .then(() => refetch?.('redirect'))
+      .catch((err) => {
+        console.error(err)
+      })
+      .finally(() => {
+        setIsDeleting(false)
+        closeModal()
+      })
+  }
+
+  async function onSubmit(data: Inputs) {
+    const { title, users } = data
     setIsLoading(true)
 
-    const parentGroupId = (createNestedGroup && params?.groupId) || null
-    axios
-      .post('/api/add-group', {
-        name: data.title,
-        userEmails: data.users.map((user) => user.email),
-        parentGroupId,
-        libraryIds: [],
-      })
-      .then(() => refetch?.())
+    const body = title
+      ? users[0].email
+        ? {
+            groupId,
+            name: data.title,
+            userEmails: data.users.map((user) => user.email),
+          }
+        : {
+            groupId,
+            name: data.title,
+          }
+      : {
+          groupId,
+          userEmails: data.users.map((user) => user.email),
+        }
+
+    await axios
+      .post('/api/update-group', body)
+      .then(() => refetch?.('refresh'))
       .catch((err) => {
         console.error(err)
       })
@@ -80,30 +121,16 @@ export default function CreateGroupModal({ closeModal, refetch, createNestedGrou
   return (
     <BaseModal closeModal={closeModal}>
       <StyledForm onSubmit={handleSubmit(onSubmit)}>
-        <Head>
-          {isEditing ? (
-            <>
-              <TitleInput
-                {...register('title', { required: true, validate: () => !isEditing })}
-                placeholder={watch('title')}
-              />
-              <CheckIcon size={20} onClick={() => setIsEditing(false)} />
-            </>
-          ) : (
-            <>
-              <Heading>{watch('title')}</Heading>
-              <EditIcon size={20} onClick={() => setIsEditing(true)} />
-            </>
-          )}
-        </Head>
+        <Heading>Group Settings</Heading>
+        <Input {...register('title')} label="Rename Group" placeholder={name} full />
         <Email>
           <Input
             {...register('users.0.email', {
-              required: true,
               pattern: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
-              validate: async (value) => (await isEmailInDb(value)) || 'There is no user with this email',
+              validate: async (value) =>
+                (value ? await isEmailInDb(value) : true) || 'There is no user with this email',
             })}
-            label="Members"
+            label="Add More Members"
             placeholder="email@example.com"
             full
           />
@@ -113,9 +140,9 @@ export default function CreateGroupModal({ closeModal, refetch, createNestedGrou
           <Email key={field.id}>
             <Input
               {...register(`users.${i + 1}.email`, {
-                required: true,
                 pattern: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
-                validate: async (value) => (await isEmailInDb(value)) || 'There is no user with this email',
+                validate: async (value) =>
+                  (value ? await isEmailInDb(value) : true) || 'There is no user with this email',
               })}
               placeholder="email@example.com"
               full
@@ -128,9 +155,30 @@ export default function CreateGroupModal({ closeModal, refetch, createNestedGrou
           Add Member
         </AddEmail>
         <StyledButton type="submit" loading={Number(isLoading) as NumBool}>
-          Create
+          Update
         </StyledButton>
       </StyledForm>
+      <DangerZone>
+        <DangerTitle>Danger Zone</DangerTitle>
+        <DangerButton
+          variant="outline"
+          loaderColor="#f44336"
+          onClick={leaveGroup}
+          loading={Number(isLeaving) as NumBool}
+        >
+          <TiUserDelete size={25} />
+          Leave Group
+        </DangerButton>
+        <DangerButton
+          variant="outline"
+          loaderColor="#f44336"
+          onClick={deleteGroup}
+          loading={Number(isDeleting) as NumBool}
+        >
+          <IoTrashBin size={25} />
+          Delete Group
+        </DangerButton>
+      </DangerZone>
     </BaseModal>
   )
 }
@@ -141,6 +189,8 @@ const StyledForm = styled.form`
   row-gap: 1rem;
 
   width: 100%;
+
+  margin-bottom: 2rem;
 `
 
 const Heading = styled.h1`
@@ -207,6 +257,30 @@ const AddEmail = styled.button`
 
 const StyledButton = styled(Button)`
   margin-top: 2rem;
+`
+
+const DangerZone = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  row-gap: 1rem;
+`
+
+const DangerTitle = styled.span`
+  font-weight: bold;
+  font-size: 1.2rem;
+`
+
+const DangerButton = styled(Button)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 100%;
+  column-gap: 1rem;
+
+  color: #f44336;
+  border-color: #f44336;
 `
 
 const EditIcon = Icon(MdModeEdit)

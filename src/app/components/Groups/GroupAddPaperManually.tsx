@@ -6,26 +6,18 @@ import axios, { AxiosResponse } from 'axios'
 import React, { useState } from 'react'
 import { HiMinus, HiPlus } from 'react-icons/hi'
 import { IoClose } from 'react-icons/io5'
-import { useRouter } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { AddNewPaperManualDto } from 'src/pages/api/add-paper/manual'
 import { ReferenceType } from '@prisma/client'
 
-type AddToAllProps = {
-  to: 'all'
-}
-
-type AddToLibraryProps = {
-  to: 'library'
-  libraryId: string
-}
-
-type Props = (AddToAllProps | AddToLibraryProps) & {
+type Props = {
+  libraryIds: string[]
   close: () => void
 }
 
-export default function AddManually(props: Props) {
-  const { to, close } = props
+export default function GroupAddPaperManually({ libraryIds, close }: Props) {
   const router = useRouter()
+  const params = useParams()
   const [refType, setRefType] = useState('Journal Article')
   const [authors, setAuthors] = useState([{ fName: '', lName: '' }])
   const [journal, setJournal] = useState('')
@@ -55,7 +47,6 @@ export default function AddManually(props: Props) {
   }
 
   async function addNewPaper() {
-    const libraryId = to === 'library' ? props.libraryId : undefined
     const referenceType = refType === 'Journal Article' ? ReferenceType.ARTICLE : ReferenceType.BOOK
 
     const { status } = await axios.post<any, AxiosResponse<any>, AddNewPaperManualDto>('/api/add-paper/manual', {
@@ -70,11 +61,12 @@ export default function AddManually(props: Props) {
       day,
       title,
       abstract,
-      libraryIds: libraryId ? [libraryId] : undefined,
+      groupId: params?.groupId as string,
+      libraryIds,
     })
 
-    if (status === 200) {
-      router.push(to === 'all' ? '/papers/all' : `/papers/lib-${libraryId}`)
+    if (status === 200 && params?.groupId) {
+      router.push(`/groups/${params.groupId}`)
     }
   }
 

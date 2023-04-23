@@ -53,6 +53,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   if (!userId) return res.status(401).end()
 
   const prompt = req.body.prompt
+  const groupId = req.body.groupId as string | undefined
+  const libraryIds = req.body.libraryIds as string[] | undefined
 
   let httpStatus
   //? Get completion from OpenAI. If it fails, log the error and return proper response
@@ -84,7 +86,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     .create({
       data: {
         ...filteredCompletion,
-        userId,
         type: completion.type === 'Journal Article' ? ReferenceType.ARTICLE : ReferenceType.BOOK,
         authors: {
           create: completion.authors?.map((author) => ({
@@ -93,6 +94,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
           })),
         },
         pages: completion.pages ? [completion.pages.from, completion.pages.to] : undefined,
+        user: {
+          connect: {
+            id: groupId ? undefined : userId,
+          },
+        },
+        group: {
+          connect: {
+            id: groupId,
+          },
+        },
+        libraries: {
+          connect: libraryIds?.map((id) => ({ id })),
+        },
       },
     })
     .catch((error) => {

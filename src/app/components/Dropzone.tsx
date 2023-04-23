@@ -4,11 +4,14 @@ import { useEffect, useState } from 'react'
 import { useDropzone, FileWithPath } from 'react-dropzone'
 import { DocumentProps } from 'react-pdf'
 import { Document } from 'react-pdf/dist/esm/entry.webpack5'
+import { DotLoader } from 'react-spinners'
 
 type LoadCallback = Required<DocumentProps>['onLoadSuccess']
 type PDFDocumentProxy = Parameters<LoadCallback>[0]
 
-export default function Dropzone() {
+type Props = { color?: string; infoText?: string; groupId?: string; libraryIds?: string[] }
+
+export default function Dropzone({ color, infoText, groupId, libraryIds }: Props) {
   const { getRootProps, getInputProps, acceptedFiles, isDragActive } = useDropzone({})
   const [errorMessage, setErrorMessage] = useState('')
   const [droppedFile, setDroppedFile] = useState<FileWithPath | null>(null)
@@ -25,6 +28,8 @@ export default function Dropzone() {
       //? Send the prompt to the server
       const res = await axios.post('/api/add-paper/prompt', {
         prompt: pageString,
+        groupId,
+        libraryIds,
       })
 
       if (res.status === 200) {
@@ -65,13 +70,13 @@ export default function Dropzone() {
 
   return (
     <>
-      <Zone {...getRootProps({ className: 'dropzone' })}>
+      <Zone {...getRootProps({ className: 'dropzone' })} color={color}>
         <input className="input-zone" {...getInputProps()} />
         <div className="text-center">
           {
             //? If the file is loading
             isLoading ? (
-              <p>Loading...</p>
+              <DotLoader color="#e6d840" size="2rem" />
             ) : //? If the file is loaded
             success ? (
               <p className="text-lg font-bold text-white">Success</p>
@@ -80,7 +85,8 @@ export default function Dropzone() {
             ) : (
               <>
                 <p className="dropzone-content">
-                  Drop here a paper in the PDF format or click the button below to add the paper manually
+                  {infoText ??
+                    'Drop here a paper in the PDF format or click the button below to add the paper manually'}
                 </p>
                 <Error>{errorMessage}</Error>
               </>
@@ -95,7 +101,7 @@ export default function Dropzone() {
   )
 }
 
-const Zone = styled.div`
+const Zone = styled.div<{ color?: string }>`
   cursor: pointer;
 
   width: 100%;
@@ -108,7 +114,7 @@ const Zone = styled.div`
 
   padding: 1.5rem 3rem;
   border-radius: 1rem;
-  background-color: #2f31a8;
+  background-color: ${({ color }) => color || '#2f31a8'};
 `
 
 const Hidden = styled.div`

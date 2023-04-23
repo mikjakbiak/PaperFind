@@ -40,7 +40,10 @@ export default function Header() {
           <NavigationLink href="/groups" active={Number(pathname.includes('groups')) as NumBool}>
             Groups
           </NavigationLink>
-          <NavigationLink href="/papers/all" active={Number(pathname.includes('papers')) as NumBool}>
+          <NavigationLink
+            href="/papers/all"
+            active={Number(pathname.includes('papers') && !pathname.includes('groups')) as NumBool}
+          >
             Papers
           </NavigationLink>
         </Navigation>

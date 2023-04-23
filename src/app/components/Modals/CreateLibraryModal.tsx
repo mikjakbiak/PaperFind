@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import axios from 'axios'
+import { useParams } from 'next/navigation'
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { NumBool } from 'src/types'
@@ -17,6 +18,7 @@ type Inputs = {
 }
 
 export default function CreateLibraryModal({ closeModal, refetch }: Props) {
+  const params = useParams()
   const [isLoading, setIsLoading] = useState(false)
   const {
     register,
@@ -25,13 +27,14 @@ export default function CreateLibraryModal({ closeModal, refetch }: Props) {
   } = useForm<Inputs>()
 
   function onSubmit(data: Inputs) {
+    const groupId = params?.groupId as string | undefined
+
     setIsLoading(true)
 
     axios
       .post('/api/add-library', {
         name: data.name,
-        libraryIds: [],
-        parentGroupId: null,
+        groupId,
       })
       .then(() => refetch?.())
       .catch((err) => {

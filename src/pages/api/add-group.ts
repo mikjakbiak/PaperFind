@@ -24,25 +24,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     .map((user) => user.id)
     .concat(userId)
 
-  const group = await prisma.group.create({
+  await prisma.group.create({
     data: {
-      userIds,
+      users: {
+        connect: userIds.map((id) => ({ id })),
+      },
       name: newGroup.name,
       libraryIds: newGroup.libraryIds,
       parentGroupId: newGroup.parentGroupId,
-    },
-  })
-
-  await prisma.user.updateMany({
-    where: {
-      id: {
-        in: userIds,
-      },
-    },
-    data: {
-      groupIds: {
-        push: group.id,
-      },
     },
   })
 
