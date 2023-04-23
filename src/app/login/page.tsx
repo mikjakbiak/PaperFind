@@ -10,6 +10,7 @@ import React, { useState } from 'react'
 import { HiOutlineArrowNarrowLeft } from 'react-icons/hi'
 import { useForm } from 'react-hook-form'
 import axios from 'axios'
+import { NumBool } from 'src/types'
 
 type Inputs = {
   fName: string
@@ -82,7 +83,7 @@ export default function SignUpPage() {
             placeholder="********"
             type="password"
           />
-          <StyledButton type="submit" loading={isLoading}>
+          <StyledButton type="submit" loading={Number(isLoading) as NumBool}>
             Sign In
           </StyledButton>
         </StyledForm>
