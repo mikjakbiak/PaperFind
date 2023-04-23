@@ -11,6 +11,7 @@ import { User } from '@prisma/client'
 import { ClientSideItem } from 'src/shared/db'
 import { PaperPopulated } from 'src/types'
 import { usePathname } from 'next/navigation'
+import { sortAlphabetically } from 'src/utils/sortAlphabetically'
 
 type GeneralCard = {
   seeMore?: boolean
@@ -43,6 +44,8 @@ type MemberCard = {
   items: ClientSideItem<User>[]
   // items: MembersPopulated[]
 }
+
+export type CardTypeWithoutGeneral = LibraryCard | GroupCard | PaperCard | TagCard | MemberCard
 
 export type CardType = GeneralCard & (LibraryCard | GroupCard | PaperCard | TagCard | MemberCard)
 
@@ -94,30 +97,36 @@ export default function CardsGrid({ cards, isGroupPage }: Props) {
         <Heading>{card.title}</Heading>
         <CardBody>
           {card.title === 'Libraries'
-            ? card.items.map((item, i) => (
-                <Link
-                  key={item.id + i}
-                  href={isGroupPage ? `${pathname}/libraries/${item.id}` : `/papers/lib-${item.id}`}
-                >
-                  {item.name}
-                </Link>
-              ))
+            ? card.items
+                .sort((a, b) => sortAlphabetically(a, b, 'name'))
+                .map((item, i) => (
+                  <Link
+                    key={item.id + i}
+                    href={isGroupPage ? `${pathname}/libraries/${item.id}` : `/papers/lib-${item.id}`}
+                  >
+                    {item.name}
+                  </Link>
+                ))
             : card.title === 'Research Groups'
-            ? card.items.map((item, i) => (
-                <Link key={item.id + i} href={`/groups/${item.id}`}>
-                  {item.name}
-                </Link>
-              ))
+            ? card.items
+                .sort((a, b) => sortAlphabetically(a, b, 'name'))
+                .map((item, i) => (
+                  <Link key={item.id + i} href={`/groups/${item.id}`}>
+                    {item.name}
+                  </Link>
+                ))
             : card.title === 'Papers'
-            ? card.items.map((item, i) => (
-                <Link key={item.id + i} href={isGroupPage ? `${pathname}/papers` : '/papers/all'}>
-                  <span>{item.title}</span>
-                  <span>
-                    <span>{item.authors[0]?.fName}</span>
-                    <span>{item.authors[0]?.lName}</span>
-                  </span>
-                </Link>
-              ))
+            ? card.items
+                .sort((a, b) => sortAlphabetically(a, b, 'title'))
+                .map((item, i) => (
+                  <Link key={item.id + i} href={isGroupPage ? `${pathname}/papers` : '/papers/all'}>
+                    <span>{item.title}</span>
+                    <span>
+                      <span>{item.authors[0]?.fName}</span>
+                      <span>{item.authors[0]?.lName}</span>
+                    </span>
+                  </Link>
+                ))
             : card.title === 'Tags'
             ? card.items.map((item, i) => (
                 <Link key={item.id + i} href={`/tags?id=${item.id}`}>
@@ -125,11 +134,13 @@ export default function CardsGrid({ cards, isGroupPage }: Props) {
                 </Link>
               ))
             : card.title === 'Members'
-            ? card.items.map((user, i) => (
-                <div key={user.id + i}>
-                  {user.firstName} {user.lastName}
-                </div>
-              ))
+            ? card.items
+                .sort((a, b) => sortAlphabetically(a, b, 'firstName'))
+                .map((user, i) => (
+                  <div key={user.id + i}>
+                    {user.firstName} {user.lastName}
+                  </div>
+                ))
             : null}
         </CardBody>
         {(card.seeMore ?? true) && (

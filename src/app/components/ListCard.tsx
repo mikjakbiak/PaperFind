@@ -5,15 +5,16 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import React, { useMemo, useState } from 'react'
 import { HiPlus } from 'react-icons/hi'
+import { sortAlphabetically } from 'src/utils/sortAlphabetically'
 import Button from './Button'
 import Card from './Card'
-import { CardType } from './CardsGrid'
+import { CardTypeWithoutGeneral } from './CardsGrid'
 import Icon from './Icon'
 import CreateGroupModal from './Modals/CreateGroupModal'
 import CreateLibraryModal from './Modals/CreateLibraryModal'
 
 type Props = {
-  card: Omit<CardType, 'seeMore'>
+  card: CardTypeWithoutGeneral
   isGroupPage?: boolean
   showNewItemButton?: boolean
 }
@@ -64,27 +65,33 @@ export default function ListCard({ card, isGroupPage, showNewItemButton = true }
       )}
       <CardBody>
         {title === 'Libraries'
-          ? items.map((item, i) => (
-              <Link key={item.id + i} href={isGroupPage ? `${pathname}/${item.id}` : `/papers/lib-${item.id}`}>
-                {item.name}
-              </Link>
-            ))
+          ? items
+              .sort((a, b) => sortAlphabetically(a, b, 'name'))
+              .map((item, i) => (
+                <Link key={item.id + i} href={isGroupPage ? `${pathname}/${item.id}` : `/papers/lib-${item.id}`}>
+                  {item.name}
+                </Link>
+              ))
           : title === 'Research Groups'
-          ? items.map((item, i) => (
-              <Link key={item.id + i} href={`/groups/${item.id}`}>
-                {item.name}
-              </Link>
-            ))
+          ? items
+              .sort((a, b) => sortAlphabetically(a, b, 'name'))
+              .map((item, i) => (
+                <Link key={item.id + i} href={`/groups/${item.id}`}>
+                  {item.name}
+                </Link>
+              ))
           : title === 'Papers'
-          ? items.map((item, i) => (
-              <Link key={item.id + i} href={isGroupPage ? `${pathname}` : '/papers/all'}>
-                <span>{item.title}</span>
-                <span>
-                  <span>{item.authors[0]?.fName}</span>
-                  <span>{item.authors[0]?.lName}</span>
-                </span>
-              </Link>
-            ))
+          ? items
+              .sort((a, b) => sortAlphabetically(a, b, 'title'))
+              .map((item, i) => (
+                <Link key={item.id + i} href={isGroupPage ? `${pathname}` : '/papers/all'}>
+                  <span>{item.title}</span>
+                  <span>
+                    <span>{item.authors[0]?.fName}</span>
+                    <span>{item.authors[0]?.lName}</span>
+                  </span>
+                </Link>
+              ))
           : title === 'Tags'
           ? items.map((item, i) => (
               <Link key={item.id + i} href={`/tags?id=${item.id}`}>
@@ -92,11 +99,13 @@ export default function ListCard({ card, isGroupPage, showNewItemButton = true }
               </Link>
             ))
           : title === 'Members'
-          ? items.map((user, i) => (
-              <div key={user.id + i}>
-                {user.firstName} {user.lastName}
-              </div>
-            ))
+          ? items
+              .sort((a, b) => sortAlphabetically(a, b, 'firstName'))
+              .map((user, i) => (
+                <div key={user.id + i}>
+                  {user.firstName} {user.lastName}
+                </div>
+              ))
           : null}
       </CardBody>
     </StyledCard>
