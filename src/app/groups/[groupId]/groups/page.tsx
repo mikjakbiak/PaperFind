@@ -1,6 +1,7 @@
 import ListCard from '@/components/ListCard'
 import React from 'react'
-import { prisma } from 'src/shared/db'
+import { GroupPopulated } from 'src/pages/api/get-many-groups'
+import { ClientSideItem, prisma } from 'src/shared/db'
 
 type Props = {
   params: {
@@ -9,7 +10,7 @@ type Props = {
 }
 
 export default async function GroupGroupsPage({ params: { groupId } }: Props) {
-  const groups = await prisma.group.findMany({
+  const groups = (await prisma.group.findMany({
     where: {
       parentGroupId: groupId,
     },
@@ -20,7 +21,7 @@ export default async function GroupGroupsPage({ params: { groupId } }: Props) {
       libraries: true,
       users: true,
     },
-  })
+  })) as any as ClientSideItem<GroupPopulated>[]
 
   return <ListCard card={{ title: 'Research Groups', items: groups }} isGroupPage />
 }

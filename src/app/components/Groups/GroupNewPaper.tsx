@@ -48,7 +48,7 @@ export default function GroupNewPaper({ userPapers, groupPapers, libraries, grou
               />
             ))
           ) : (
-            <p>No papers found</p>
+            <p>No libraries found</p>
           )}
         </Libraries>
         <Drop>

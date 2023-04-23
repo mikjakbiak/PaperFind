@@ -32,18 +32,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   const body = req.body as AddNewPaperManualDto
   const authors = body.authors
 
+  const userOrGroup = body.groupId
+    ? { group: { connect: { id: body.groupId } } }
+    : { user: { connect: { id: userId } } }
+
   await prisma.paper.create({
     data: {
-      user: {
-        connect: {
-          id: body.groupId ? undefined : userId,
-        },
-      },
-      group: {
-        connect: {
-          id: body.groupId,
-        },
-      },
+      ...userOrGroup,
       type: body.referenceType,
       title: body.title,
       abstract: body.abstract,

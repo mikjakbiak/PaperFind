@@ -128,10 +128,11 @@ export default async function HomePage() {
           title: 'Papers' as const,
           items: papers,
         },
-        // {
-        //   title: 'Tags' as const,
-        //   items: tags,
-        // },
+        //? Tags are not implemented yet
+        {
+          title: 'Tags' as const,
+          items: [],
+        },
       ]}
     />
   )

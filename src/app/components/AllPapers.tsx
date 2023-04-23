@@ -6,6 +6,7 @@ import React from 'react'
 import { HiPlus } from 'react-icons/hi'
 import { ClientSideItem } from 'src/shared/db'
 import { NumBool, PaperPopulated } from 'src/types'
+import ListCard from './ListCard'
 import StyledLink from './StyledLink'
 
 type Props = {
@@ -27,30 +28,7 @@ export default function AllPapers({ papers }: Props) {
           Add Paper
         </StyledLink>
       </AddNew>
-      <Content>
-        <table>
-          <thead>
-            <tr>
-              <th>Title</th>
-              <th>Author</th>
-              <th>Journal</th>
-              <th>Year</th>
-            </tr>
-          </thead>
-          <tbody>
-            {papers.map((paper, id) => (
-              <tr key={paper.id + id}>
-                <td>{paper.title}</td>
-                <td>
-                  {paper.authors[0]?.fName} {paper.authors[0]?.lName}
-                </td>
-                <td>{paper.publication}</td>
-                <td>{paper.year}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </Content>
+      <ListCard card={{ title: 'Papers', items: papers }} />
     </Main>
   )
 }

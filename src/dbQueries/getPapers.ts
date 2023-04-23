@@ -6,8 +6,10 @@ export async function getPapers(of: 'user' | 'group' | 'library', id: string) {
     switch (of) {
       case 'group':
         return {
-          group: {
-            id,
+          groups: {
+            some: {
+              id,
+            },
           },
         }
       case 'library':

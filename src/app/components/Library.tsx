@@ -8,8 +8,8 @@ import { IoMdSettings } from 'react-icons/io'
 import { LibraryPopulated } from 'src/pages/api/get-many-groups'
 import { ClientSideItem } from 'src/shared/db'
 import { PaperPopulated } from 'src/types'
-import CardsGrid from './CardsGrid'
 import Icon from './Icon'
+import ListCard from './ListCard'
 import LibrarySettingsModal from './Modals/LibrarySettingsModal'
 import StyledLink from './StyledLink'
 
@@ -52,19 +52,11 @@ export default function Library({ library, papers }: Props) {
           <SettingsButton title="Group Settings" size={40} onClick={() => setShowModal(true)} />
         </Right>
       </Head>
-      {/* In the future the Tags will be supported */}
-      <CardsGrid
-        cards={[
-          {
-            title: 'Papers' as const,
-            items: papers,
-            seeMore: false,
-          },
-          // {
-          //   title: 'Tags' as const,
-          //   items: tags,
-          // },
-        ]}
+      <ListCard
+        card={{
+          title: 'Papers' as const,
+          items: papers,
+        }}
       />
     </section>
   )

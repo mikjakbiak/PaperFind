@@ -28,7 +28,7 @@ model Group {
     name           String
     users          User[]     @relation(fields: [userIds], references: [id])
     userIds        String[]   @db.ObjectId
-    papers    Paper[]  @relation()
+    papers         Paper[]    @relation(fields: [paperIds], references: [id])
     paperIds  String[]   @db.ObjectId
     libraries      Library[]  @relation()
     libraryIds     String[]   @db.ObjectId
@@ -59,8 +59,8 @@ model Paper {
     libraryIds  String[]   @db.ObjectId
     user        User?     @relation(fields: [userId], references: [id])
     userId      String?   @db.ObjectId
-    group       Group?   @relation(fields: [groupId], references: [id])
-    groupId     String?  @db.ObjectId
+    groups       Group[]   @relation(fields: [groupIds], references: [id])
+    groupIds     String[]  @db.ObjectId
     created     DateTime @default(now())
     updated     DateTime @updatedAt
 }

@@ -24,7 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       const data = groupId
         ? {
             ...libraries,
-            group: {
+            groups: {
               connect: {
                 id: groupId,
               },

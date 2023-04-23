@@ -81,6 +81,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       return obj
     }, {})
 
+  const userOrGroup = groupId ? { group: { connect: { id: groupId } } } : { user: { connect: { id: userId } } }
+
   //? Create paper in database
   await prisma.paper
     .create({
@@ -94,16 +96,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
           })),
         },
         pages: completion.pages ? [completion.pages.from, completion.pages.to] : undefined,
-        user: {
-          connect: {
-            id: groupId ? undefined : userId,
-          },
-        },
-        group: {
-          connect: {
-            id: groupId,
-          },
-        },
+        ...userOrGroup,
         libraries: {
           connect: libraryIds?.map((id) => ({ id })),
         },
