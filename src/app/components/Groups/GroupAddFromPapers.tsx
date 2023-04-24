@@ -26,6 +26,7 @@ export default function GroupAddFromPapers({ title, libraryIds, papers, close }:
   const router = useRouter()
   const params = useParams()
   const [isLoading, setIsLoading] = useState(false)
+  const [isError, setIsError] = useState(false)
 
   const {
     register,
@@ -40,13 +41,21 @@ export default function GroupAddFromPapers({ title, libraryIds, papers, close }:
   async function onSubmit(data: Inputs) {
     setIsLoading(true)
 
-    const res = await axios.post('/api/library-attach-papers', {
-      libraryIds,
-      paperIds: data.chosePapers,
-      groupId: params?.groupId as string,
-    })
+    const res = await axios
+      .post('/api/library-attach-papers', {
+        libraryIds,
+        paperIds: data.chosePapers,
+        groupId: params?.groupId as string,
+      })
+      .catch((err) => {
+        console.error(err)
+        setIsError(true)
+      })
+      .finally(() => {
+        setIsLoading(false)
+      })
 
-    if (res.status === 200 && params?.groupId) {
+    if (res?.status === 200 && params?.groupId) {
       router.push(`/groups/${params.groupId}`)
     }
   }
@@ -64,6 +73,7 @@ export default function GroupAddFromPapers({ title, libraryIds, papers, close }:
             <StyledButton type="submit" loading={Number(isLoading) as NumBool}>
               Submit
             </StyledButton>
+            {isError && <p>Something went wrong</p>}
           </>
         ) : (
           <p>No papers found</p>

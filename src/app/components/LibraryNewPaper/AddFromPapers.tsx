@@ -48,12 +48,20 @@ export default function AddFromPapers({ libraryId, papers, close }: Props) {
   async function onSubmit(data: Inputs) {
     setIsLoading(true)
 
-    const res = await axios.post('/api/library-attach-papers', {
-      libraryIds: [libraryId],
-      paperIds: data.chosePapers,
-    })
+    const res = await axios
+      .post('/api/library-attach-papers', {
+        libraryIds: [libraryId],
+        paperIds: data.chosePapers,
+      })
+      .catch((err) => {
+        console.error(err)
+        return err.response
+      })
+      .finally(() => {
+        setIsLoading(false)
+      })
 
-    if (res.status === 200) {
+    if (res?.status === 200) {
       router.push(previousPath)
     }
   }

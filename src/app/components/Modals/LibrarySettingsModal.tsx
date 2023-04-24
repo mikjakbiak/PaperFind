@@ -19,11 +19,16 @@ export default function LibrarySettingsModal({ papers, libraryId, closeModal, re
   const [isCopied, setIsCopied] = useState(false)
 
   async function deleteLibrary() {
-    const res = await axios.post('/api/delete-library', {
-      libraryId,
-    })
+    const res = await axios
+      .post('/api/delete-library', {
+        libraryId,
+      })
+      .catch((err) => {
+        console.error(err)
+        return err?.response
+      })
 
-    if (res.status === 200) {
+    if (res?.status === 200) {
       if (refetch) refetch()
       closeModal()
     }

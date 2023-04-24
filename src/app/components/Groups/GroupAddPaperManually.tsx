@@ -49,21 +49,26 @@ export default function GroupAddPaperManually({ libraryIds, close }: Props) {
   async function addNewPaper() {
     const referenceType = refType === 'Journal Article' ? ReferenceType.ARTICLE : ReferenceType.BOOK
 
-    const { status } = await axios.post<any, AxiosResponse<any>, AddNewPaperManualDto>('/api/add-paper/manual', {
-      referenceType,
-      authors,
-      journal,
-      volume,
-      issue,
-      pages,
-      year,
-      month,
-      day,
-      title,
-      abstract,
-      groupId: params?.groupId as string,
-      libraryIds,
-    })
+    const { status } = await axios
+      .post<any, AxiosResponse<any>, AddNewPaperManualDto>('/api/add-paper/manual', {
+        referenceType,
+        authors,
+        journal,
+        volume,
+        issue,
+        pages,
+        year,
+        month,
+        day,
+        title,
+        abstract,
+        groupId: params?.groupId as string,
+        libraryIds,
+      })
+      .catch((err) => {
+        console.error(err)
+        return { status: err?.response?.status }
+      })
 
     if (status === 200 && params?.groupId) {
       router.push(`/groups/${params.groupId}`)

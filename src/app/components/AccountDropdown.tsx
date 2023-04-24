@@ -14,9 +14,14 @@ export default function AccountDropdown() {
   }, [])
 
   async function logout() {
-    await axios.post('/api/auth/logout').then(() => {
-      router.push('/')
-    })
+    await axios
+      .post('/api/auth/logout')
+      .then(() => {
+        router.push('/')
+      })
+      .catch((err) => {
+        console.error(err)
+      })
   }
 
   return (
