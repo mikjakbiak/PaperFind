@@ -6,7 +6,7 @@ import Input from 'src/app/components/Input'
 import StyledLink from 'src/app/components/StyledLink'
 import styled from '@emotion/styled'
 import { useRouter } from 'next/navigation'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { HiOutlineArrowNarrowLeft } from 'react-icons/hi'
 import { useForm } from 'react-hook-form'
 import axios from 'axios'
@@ -31,6 +31,10 @@ export default function SignUpPage() {
     formState: { errors },
   } = useForm<Inputs>()
 
+  useEffect(() => {
+    router.prefetch('/home')
+  }, [])
+
   async function isEmailAvailable(email: string) {
     return await axios
       .get<UserResponse>('/api/is-email-available?email=' + email)
@@ -43,8 +47,8 @@ export default function SignUpPage() {
       })
   }
 
-  function onSubmit(data: Inputs) {
-    axios
+  async function onSubmit(data: Inputs) {
+    await axios
       .post('/api/auth/register', {
         email: data.email,
         password: data.password,

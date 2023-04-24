@@ -56,11 +56,11 @@ export default function CreateGroupModal({ closeModal, refetch, createNestedGrou
       })
   }
 
-  function onSubmit(data: Inputs) {
+  async function onSubmit(data: Inputs) {
     setIsLoading(true)
 
     const parentGroupId = (createNestedGroup && params?.groupId) || null
-    axios
+    await axios
       .post('/api/add-group', {
         name: data.title,
         userEmails: data.users.map((user) => user.email),

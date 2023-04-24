@@ -26,12 +26,12 @@ export default function CreateLibraryModal({ closeModal, refetch }: Props) {
     formState: { errors },
   } = useForm<Inputs>()
 
-  function onSubmit(data: Inputs) {
+  async function onSubmit(data: Inputs) {
     const groupId = params?.groupId as string | undefined
 
     setIsLoading(true)
 
-    axios
+    await axios
       .post('/api/add-library', {
         name: data.name,
         groupId,

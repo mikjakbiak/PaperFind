@@ -13,8 +13,8 @@ export default function AccountDropdown() {
     router.prefetch('/')
   }, [])
 
-  function logout() {
-    axios.post('/api/auth/logout').then(() => {
+  async function logout() {
+    await axios.post('/api/auth/logout').then(() => {
       router.push('/')
     })
   }
