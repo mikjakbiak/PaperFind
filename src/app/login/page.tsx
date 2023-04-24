@@ -50,7 +50,8 @@ export default function SignUpPage() {
       })
       .then(() => {
         setAuthError('')
-        router.push('/home')
+        //? We're using window.location.href instead of router.push because router.push has some unidentified bug
+        window.location.href = '/home'
       })
       .catch((err) => {
         if (err.response.status === 401) {

@@ -57,7 +57,7 @@ export default function SignUpPage() {
       })
       .then(() => {
         setAuthError('')
-        router.push('/home')
+        window.location.href = '/home'
       })
       .catch((err) => {
         console.error(err)

@@ -16,9 +16,11 @@ export default function Header() {
   useEffect(() => {
     router.prefetch('/login')
     router.prefetch('/register')
-    router.prefetch('/home')
-    router.prefetch('/groups')
-    router.prefetch('/papers/all')
+    if (pathname && (pathname.includes('home') || pathname.includes('groups') || pathname.includes('papers'))) {
+      router.prefetch('/home')
+      router.prefetch('/groups')
+      router.prefetch('/papers/all')
+    }
   }, [])
 
   const Right = useMemo(() => {
