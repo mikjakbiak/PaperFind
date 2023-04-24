@@ -1,17 +1,23 @@
 import styled from '@emotion/styled'
-import React from 'react'
+import React, { useState } from 'react'
 import Button from '../Button'
 import BaseModal from './BaseModal'
 import { IoTrashBin } from 'react-icons/io5'
 import axios from 'axios'
+import { ClientSideItem } from 'src/shared/db'
+import { PaperPopulated } from 'src/types'
+import { getBibliography } from 'src/utils/getBibliography'
 
 type Props = {
+  papers: ClientSideItem<PaperPopulated>[]
   libraryId: string
   closeModal: () => void
   refetch?: () => void
 }
 
-export default function LibrarySettingsModal({ libraryId, closeModal, refetch }: Props) {
+export default function LibrarySettingsModal({ papers, libraryId, closeModal, refetch }: Props) {
+  const [isCopied, setIsCopied] = useState(false)
+
   async function deleteLibrary() {
     const res = await axios.post('/api/delete-library', {
       libraryId,
@@ -23,10 +29,21 @@ export default function LibrarySettingsModal({ libraryId, closeModal, refetch }:
     }
   }
 
+  function generateBibliography() {
+    const bib = getBibliography(papers)
+    navigator.clipboard.writeText(bib.join('\n'))
+    setIsCopied(true)
+
+    setTimeout(() => {
+      setIsCopied(false)
+    }, 2000)
+  }
+
   return (
     <BaseModal closeModal={closeModal}>
       <Body>
         <Heading>Library Settings</Heading>
+        <Button onClick={generateBibliography}>{isCopied ? 'Copied to Clipboard!' : 'Generate Bibliography'}</Button>
         <DeleteButton variant="outline" loaderColor="#f44336" onClick={deleteLibrary}>
           <IoTrashBin size={20} />
           Delete Library

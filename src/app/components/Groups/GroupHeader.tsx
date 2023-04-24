@@ -5,6 +5,8 @@ import { useParams, usePathname, useRouter } from 'next/navigation'
 import React, { useMemo, useState } from 'react'
 import { HiPlus } from 'react-icons/hi'
 import { IoMdSettings } from 'react-icons/io'
+import { ClientSideItem } from 'src/shared/db'
+import { PaperPopulated } from 'src/types'
 import Icon from '../Icon'
 import GroupSettingsModal from '../Modals/GroupSettingsModal'
 import LibrarySettingsModal from '../Modals/LibrarySettingsModal'
@@ -14,7 +16,7 @@ type Props = {
   id: string
   name: string
   parentId: string | null
-  libraries: { id: string; name: string }[]
+  libraries: { id: string; name: string; papers: ClientSideItem<PaperPopulated>[] }[]
 }
 
 export default function GroupHeader({ id, name, parentId, libraries }: Props) {
@@ -23,19 +25,23 @@ export default function GroupHeader({ id, name, parentId, libraries }: Props) {
   const params = useParams()
   const [showGroupSettingsModal, setShowGroupSettingsModal] = useState(false)
   const [showLibrarySettingsModal, setShowLibrarySettingsModal] = useState(false)
-  const [libraryId, setLibraryId] = useState<string>('')
+  const [library, setLibrary] = useState<{ id: string; name: string; papers: ClientSideItem<PaperPopulated>[] } | null>(
+    null
+  )
 
   const title = useMemo(() => {
     if (params?.libraryId) {
-      setLibraryId(params.libraryId as string)
+      const library = libraries.find((library) => library.id === params.libraryId)
 
-      const libraryName = libraries.find((library) => library.id === params.libraryId)?.name
+      if (!library) return
 
-      if (!libraryName) return
+      setLibrary(library)
 
-      return `${name} - ${libraryName}`
+      if (!library.name) return
+
+      return `${name} - ${library.name}`
     } else {
-      setLibraryId('')
+      setLibrary(null)
       return name
     }
   }, [name, params?.libraryId])
@@ -44,7 +50,7 @@ export default function GroupHeader({ id, name, parentId, libraries }: Props) {
     <Main>
       <Title>
         {title}
-        {libraryId ? (
+        {library ? (
           <SettingsButton size={30} title="Library Settings" onClick={() => setShowLibrarySettingsModal(true)} />
         ) : parentId ? (
           <StyledLink href={`/groups/${parentId}`}>Go To Parent Group</StyledLink>
@@ -69,8 +75,12 @@ export default function GroupHeader({ id, name, parentId, libraries }: Props) {
             }
           />
         )}
-        {showLibrarySettingsModal && (
-          <LibrarySettingsModal libraryId={libraryId} closeModal={() => setShowLibrarySettingsModal(false)} />
+        {showLibrarySettingsModal && library && (
+          <LibrarySettingsModal
+            libraryId={library.id}
+            papers={library.papers}
+            closeModal={() => setShowLibrarySettingsModal(false)}
+          />
         )}
         <SettingsButton size={40} title="Group Settings" onClick={() => setShowGroupSettingsModal(true)} />
       </Right>

@@ -35,6 +35,7 @@ export default function Library({ library, papers }: Props) {
     <section>
       {showModal && (
         <LibrarySettingsModal
+          papers={papers}
           libraryId={library.id}
           closeModal={() => setShowModal(false)}
           refetch={() => setRefetch(true)}
