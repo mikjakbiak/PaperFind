@@ -1,7 +1,6 @@
 import GroupHeader from '@/components/Groups/GroupHeader'
 import { ClientSideItem, prisma } from 'src/shared/db'
 import { PaperPopulated } from 'src/types'
-import Sidebar from '../Sidebar'
 
 export default async function GroupsLayout({
   children,
@@ -58,17 +57,11 @@ export default async function GroupsLayout({
   return (
     <section
       style={{
-        display: 'grid',
-        gridTemplateColumns: ' 1fr 4fr',
-        columnGap: '1.5rem',
+        width: '100%',
       }}
     >
-      {/* @ts-expect-error server component */}
-      <Sidebar groupId={groupId} />
-      <section>
-        <GroupHeader name={group.name} id={groupId} libraries={group.libraries} parentId={group.parentGroupId} />
-        {children}
-      </section>
+      <GroupHeader name={group.name} id={groupId} libraries={group.libraries} parentId={group.parentGroupId} />
+      {children}
     </section>
   )
 }

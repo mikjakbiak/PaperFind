@@ -9,15 +9,16 @@ import Link from 'next/link'
 import { ClientSideItem } from 'src/shared/db'
 import { NumBool } from 'src/types'
 import ModalButton from '../ModalButton'
+import { useParams } from 'next/navigation'
 
 type Props = {
   _groups: ClientSideItem<GroupPopulated>[]
-  groupId?: string
 }
 
-export default function Groups({ _groups, groupId }: Props) {
+export default function Groups({ _groups }: Props) {
   const [refetch, setRefetch] = useState(false)
   const [groups, setGroups] = useState<ClientSideItem<GroupPopulated>[]>(_groups)
+  const params = useParams()
 
   useEffect(() => {
     if (!refetch) return
@@ -37,12 +38,14 @@ export default function Groups({ _groups, groupId }: Props) {
       })
   }, [refetch])
 
+  if (!params?.groupId) return null
+
   return (
     <Main>
       <ModalButton refetch={() => setRefetch(!refetch)} />
       {groups.map((group) => (
         <Link key={group.id} href={`/groups/${group.id}`}>
-          <Button variant="sidebar-secondary" active={Number(groupId === group.id) as NumBool}>
+          <Button variant="sidebar-secondary" active={Number(params.groupId === group.id) as NumBool}>
             {group.name}
           </Button>
         </Link>
@@ -52,6 +55,7 @@ export default function Groups({ _groups, groupId }: Props) {
 }
 
 const Main = styled.div`
+  flex-grow: 1;
   align-self: flex-start;
 
   display: flex;

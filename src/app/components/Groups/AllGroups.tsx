@@ -6,7 +6,6 @@ import React from 'react'
 import { GroupPopulated } from 'src/pages/api/get-many-groups'
 import { ClientSideItem } from 'src/shared/db'
 import ListCard from '../ListCard'
-import ModalButton from '../ModalButton'
 
 type Props = {
   groups: ClientSideItem<GroupPopulated>[]
@@ -29,6 +28,7 @@ export default function AllGroups({ groups }: Props) {
 }
 
 const Main = styled.div`
+  width: 100%;
   display: grid;
   row-gap: 1rem;
 

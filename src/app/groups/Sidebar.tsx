@@ -5,7 +5,7 @@ import { prisma } from 'src/shared/db'
 import { GroupPopulated } from 'src/pages/api/get-many-groups'
 import { ClientSideItem } from 'src/shared/db'
 
-export default async function Sidebar({ groupId }: { groupId?: string }) {
+export default async function Sidebar() {
   const userId = headers().get('user-id')
   //? Should never happen
   if (!userId) return null
@@ -49,5 +49,5 @@ export default async function Sidebar({ groupId }: { groupId?: string }) {
       return []
     })) as ClientSideItem<GroupPopulated>[]
 
-  return <Groups groupId={groupId} _groups={groups} />
+  return <Groups _groups={groups} />
 }
