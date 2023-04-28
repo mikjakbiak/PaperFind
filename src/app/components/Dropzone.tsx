@@ -5,6 +5,7 @@ import { useDropzone, FileWithPath } from 'react-dropzone'
 import { DocumentProps } from 'react-pdf'
 import { Document } from 'react-pdf/dist/esm/entry.webpack5'
 import { DotLoader } from 'react-spinners'
+import { getCompletion } from 'src/utils/openAI'
 
 type LoadCallback = Required<DocumentProps>['onLoadSuccess']
 type PDFDocumentProxy = Parameters<LoadCallback>[0]
@@ -25,9 +26,19 @@ export default function Dropzone({ color, infoText, groupId, libraryIds }: Props
     const pageString = pageContext.items.map((item) => ('str' in item ? item.str : '')).join(' ')
 
     try {
+      //? Get completion from OpenAI
+      const completion = await getCompletion(pageString)
+
+      if (!completion) {
+        setDroppedFile(null)
+        setIsLoading(false)
+        setErrorMessage('Something went wrong, please try again')
+        return
+      }
+
       //? Send the prompt to the server
       const res = await axios.post('/api/add-paper/prompt', {
-        prompt: pageString,
+        completion,
         groupId,
         libraryIds,
       })
@@ -41,8 +52,13 @@ export default function Dropzone({ color, infoText, groupId, libraryIds }: Props
           setSuccess(false)
         }, 2000)
       }
-    } catch (err) {
-      console.error(err)
+    } catch (error: any) {
+      if (error.response) {
+        console.error(error.response.status)
+        console.error(error.response.data)
+      } else {
+        console.error(error.message)
+      }
       setDroppedFile(null)
       setErrorMessage('An error occurred, please try again')
       setIsLoading(false)

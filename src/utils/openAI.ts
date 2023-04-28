@@ -1,7 +1,10 @@
 import { Configuration, OpenAIApi } from 'openai'
+import { AnswerDto } from 'src/types'
+import { formatChatAnswer } from './formatChatAnswer'
+
 const configuration = new Configuration({
   organization: 'org-bkDNUYjT7ZUfK0bHRwnniVCV',
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
 })
 const openai = new OpenAIApi(configuration)
 
@@ -58,8 +61,33 @@ For publication, give only the name of the journal or the book.
 
 IT IS VERY IMPORTANT THAT YOU RETURN ONLY INFORMATION THAT CAN BE FOUND IN THE GIVEN TEXT`
 
+const exampleAnswer: AnswerDto = {
+  type: 'Journal Article',
+  title: 'Some Title',
+  authors: [
+    {
+      fName: 'John',
+      lName: 'Doe',
+    },
+    {
+      fName: 'Jane',
+      lName: 'Doe',
+    },
+  ],
+  abstract: 'This is an abstract. It is a short summary of the article.',
+  year: 2015,
+  month: 1,
+  day: undefined,
+  publisher: 'Some Publisher',
+  publication: 'Name of a Journal',
+  doi: undefined,
+  volume: 3,
+  issue: 12,
+  pages: { from: 21, to: 37 },
+}
+
 export async function getCompletion(prompt: string) {
-  return await openai.createChatCompletion({
+  const res = await openai.createChatCompletion({
     model: 'gpt-3.5-turbo',
     messages: [
       { role: 'system', content: systemPrompt },
@@ -67,4 +95,16 @@ export async function getCompletion(prompt: string) {
     ],
     temperature: 0,
   })
+
+  const answer = res.data.choices[0].message?.content
+  if (!answer) return
+
+  const completion = formatChatAnswer(JSON.parse(answer)) as AnswerDto
+
+  return Object.keys(completion)
+    .filter((key) => key in exampleAnswer)
+    .reduce<AnswerDto>((obj, key) => {
+      obj[key as keyof AnswerDto] = completion[key as keyof AnswerDto] as any
+      return obj
+    }, {})
 }
