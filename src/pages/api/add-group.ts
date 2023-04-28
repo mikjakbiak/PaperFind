@@ -30,8 +30,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         connect: userIds.map((id) => ({ id })),
       },
       name: newGroup.name,
-      libraryIds: newGroup.libraryIds,
-      parentGroupId: newGroup.parentGroupId,
+      libraries: {
+        connect: newGroup.libraryIds?.map((id) => ({ id })) ?? [],
+      },
+      parentGroup: {
+        connect: {
+          id: newGroup.parentGroupId ?? undefined,
+        },
+      },
     },
   })
 
