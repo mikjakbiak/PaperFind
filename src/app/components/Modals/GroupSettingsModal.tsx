@@ -29,6 +29,7 @@ export default function GroupSettingsModal({ name, groupId, closeModal, refetch 
   const [isLoading, setIsLoading] = useState(false)
   const [isLeaving, setIsLeaving] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const {
     register,
     handleSubmit,
@@ -72,17 +73,21 @@ export default function GroupSettingsModal({ name, groupId, closeModal, refetch 
   async function deleteGroup() {
     setIsDeleting(true)
 
+    let msg: string | null = ''
     await axios
       .post('/api/delete-group', {
         groupId,
       })
       .then(() => refetch?.('redirect'))
       .catch((err) => {
-        console.error(err)
+        msg = err.response.data.error
+        setErrorMessage(err.response.data.error)
       })
       .finally(() => {
+        if (!msg) {
+          closeModal()
+        }
         setIsDeleting(false)
-        closeModal()
       })
   }
 
@@ -178,6 +183,7 @@ export default function GroupSettingsModal({ name, groupId, closeModal, refetch 
           <IoTrashBin size={25} />
           Delete Group
         </DangerButton>
+        {errorMessage && <Error>{errorMessage}</Error>}
       </DangerZone>
     </BaseModal>
   )
@@ -196,19 +202,6 @@ const StyledForm = styled.form`
 const Heading = styled.h1`
   text-align: center;
   font-weight: 500;
-`
-
-const Head = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  column-gap: 1rem;
-  width: 100%;
-`
-
-const TitleInput = styled(Input)`
-  margin: 2rem 0;
 `
 
 const Email = styled.div`
@@ -283,9 +276,11 @@ const DangerButton = styled(Button)`
   border-color: #f44336;
 `
 
-const EditIcon = Icon(MdModeEdit)
-
-const CheckIcon = styled(Icon(HiCheck))``
+const Error = styled.span`
+  color: #f44336;
+  font-size: 0.8rem;
+  font-weight: bold;
+`
 
 const MinusIcon = styled(Icon(HiMinus))``
 
