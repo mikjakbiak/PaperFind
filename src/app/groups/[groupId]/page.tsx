@@ -4,8 +4,10 @@ import { ClientSideItem, prisma } from 'src/shared/db'
 import { GroupPopulated, LibraryPopulated } from 'src/pages/api/get-many-groups'
 import { User } from '@prisma/client'
 import { PaperPopulated } from 'src/types'
+import { headers } from 'next/headers'
 
 export default async function GroupPage({ params }: { params: { groupId: string } }) {
+  const userId = headers().get('user-id')
   const groupId = params.groupId
   const group = await prisma.group
     .findUnique({
@@ -38,11 +40,13 @@ export default async function GroupPage({ params }: { params: { groupId: string 
 
   if (!group) return null
 
-  const nestedGroups = group.nestedGroups.map((group) => ({
-    ...group,
-    created: group.created.toISOString(),
-    updated: group.updated.toISOString(),
-  })) as ClientSideItem<GroupPopulated>[]
+  const nestedGroups = group.nestedGroups
+    .map((group) => ({
+      ...group,
+      created: group.created.toISOString(),
+      updated: group.updated.toISOString(),
+    }))
+    .filter((group) => group.userIds.some((id) => id === userId)) as ClientSideItem<GroupPopulated>[]
 
   const libraries = group.libraries.map((library) => ({
     ...library,
