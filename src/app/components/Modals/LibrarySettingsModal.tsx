@@ -12,7 +12,7 @@ type Props = {
   papers: ClientSideItem<PaperPopulated>[]
   libraryId: string
   closeModal: () => void
-  refetch?: () => void
+  refetch?: (action: 'refresh' | 'redirect') => void
 }
 
 export default function LibrarySettingsModal({ papers, libraryId, closeModal, refetch }: Props) {
@@ -29,7 +29,7 @@ export default function LibrarySettingsModal({ papers, libraryId, closeModal, re
       })
 
     if (res?.status === 200) {
-      if (refetch) refetch()
+      if (refetch) refetch('redirect')
       closeModal()
     }
   }

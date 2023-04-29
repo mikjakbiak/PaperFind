@@ -22,14 +22,6 @@ export default function Library({ library, papers }: Props) {
   const pathname = usePathname()
   const router = useRouter()
   const [showModal, setShowModal] = useState(false)
-  const [refetch, setRefetch] = useState(false)
-
-  useEffect(() => {
-    if (refetch) {
-      setRefetch(false)
-      router.push('/papers/all')
-    }
-  }, [refetch])
 
   return (
     <section>
@@ -38,7 +30,7 @@ export default function Library({ library, papers }: Props) {
           papers={papers}
           libraryId={library.id}
           closeModal={() => setShowModal(false)}
-          refetch={() => setRefetch(true)}
+          refetch={(action: 'refresh' | 'redirect') => action === 'redirect' && router.push('/papers/all')}
         />
       )}
       <Head>

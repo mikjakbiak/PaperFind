@@ -80,6 +80,12 @@ export default function GroupHeader({ id, name, parentId, libraries }: Props) {
             libraryId={library.id}
             papers={library.papers}
             closeModal={() => setShowLibrarySettingsModal(false)}
+            refetch={(action: 'refresh' | 'redirect') => {
+              if (!pathname) return
+              const array = pathname.split('/')
+              const url = array.slice(0, array.length - 1).join('/')
+              action === 'refresh' ? router.refresh() : router.push(url)
+            }}
           />
         )}
         <SettingsButton size={40} title="Group Settings" onClick={() => setShowGroupSettingsModal(true)} />
