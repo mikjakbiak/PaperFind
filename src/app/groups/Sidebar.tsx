@@ -10,7 +10,7 @@ export default async function Sidebar() {
   //? Should never happen
   if (!userId) return null
 
-  const groups = (await prisma.group
+  let groups = (await prisma.group
     .findMany({
       where: {
         userIds: {
@@ -26,6 +26,11 @@ export default async function Sidebar() {
                 authors: true,
               },
             },
+          },
+        },
+        nestedGroups: {
+          include: {
+            users: true,
           },
         },
       },
@@ -48,6 +53,24 @@ export default async function Sidebar() {
       console.error(e)
       return []
     })) as ClientSideItem<GroupPopulated>[]
+
+  const nestedGroups = groups.reduce((acc, group) => {
+    if (!group.nestedGroups) return acc
+    return [...acc, ...group.nestedGroups]
+  }, [] as GroupPopulated[])
+
+  groups.push(
+    ...(nestedGroups.map((group) => ({
+      ...group,
+      created: group.created.toISOString(),
+      updated: group.updated.toISOString(),
+      users: group.users.map((user) => ({
+        ...user,
+        created: user.created.toISOString(),
+        updated: user.updated.toISOString(),
+      })),
+    })) as any as ClientSideItem<GroupPopulated>[])
+  )
 
   return <Groups _groups={groups} />
 }

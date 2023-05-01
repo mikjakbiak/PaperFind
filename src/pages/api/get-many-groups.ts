@@ -10,6 +10,7 @@ export type LibraryPopulated = Library & {
 export type GroupPopulated = Group & {
   users: User[]
   libraries: LibraryPopulated[]
+  nestedGroups?: GroupPopulated[]
 }
 
 export default async function handler(
