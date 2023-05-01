@@ -24,6 +24,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     .map((user) => user.id)
     .concat(userId)
 
+  const parentGroup = newGroup.parentGroupId
+    ? {
+        parentGroup: {
+          connect: {
+            id: newGroup.parentGroupId,
+          },
+        },
+      }
+    : undefined
+
   await prisma.group.create({
     data: {
       users: {
@@ -33,11 +43,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       libraries: {
         connect: newGroup.libraryIds?.map((id) => ({ id })) ?? [],
       },
-      parentGroup: {
-        connect: {
-          id: newGroup.parentGroupId ?? undefined,
-        },
-      },
+      ...parentGroup,
     },
   })
 
