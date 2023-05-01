@@ -10,7 +10,7 @@ export default async function Sidebar() {
   //? Should never happen
   if (!userId) return null
 
-  let groups = (await prisma.group
+  const groups = (await prisma.group
     .findMany({
       where: {
         userIds: {
